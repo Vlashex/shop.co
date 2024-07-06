@@ -70,13 +70,12 @@ export default function Home() {
       <div className="flex justify-between w-full">
         {
           a.map((value, index)=>
-            <Card className="w-[295px] h-[405px] p-0 border-0">
+            <Card className="w-[295px] h-[405px] p-0 border-0" key={index}>
               <CardHeader>
                 <Image src={cardImg} alt=""/>
               </CardHeader>
               <CardContent>
                 <h1 className="text-xl capitalize font-semibold overflow-x-hidden text-nowrap">T-shirt With Tape Details</h1>
-                //stars
                 <div className="flex gap-2 items-center">
                   <h1 className="text-xl">$120</h1>
                   <h1 className="text-xl line-through text-gray-400">$120</h1>
@@ -94,13 +93,12 @@ export default function Home() {
       <div className="flex justify-between w-full">
         {
           a.map((value, index)=>
-            <Card className="w-[295px] h-[405px] p-0 border-0">
+            <Card className="w-[295px] h-[405px] p-0 border-0" key={index}>
               <CardHeader>
                 <Image src={cardImg} alt=""/>
               </CardHeader>
               <CardContent>
                 <h1 className="text-xl capitalize font-semibold overflow-x-hidden text-nowrap">T-shirt With Tape Details</h1>
-                //stars
                 <div className="flex gap-2 items-center">
                   <h1 className="text-xl">$120</h1>
                   <h1 className="text-xl line-through text-gray-400">$120</h1>
@@ -165,7 +163,7 @@ export default function Home() {
                     <h1 className="font-bold my-4">Sarah M.</h1>
                     <Image src={check} alt="check"/>
                   </div>
-                  <p className="text-base">"I'm blown away by the quality and style of the clothes I received from Shop.co. From casual wear to elegant dresses, every piece I've bought has exceeded my expectations.”</p>
+                  <p className="text-base">I am blown away by the quality and style of the clothes I received from Shop.co. From casual wear to elegant dresses, every piece Ive bought has exceeded my expectations.</p>
                 </div>
                 <div className="w-[400px] h-[240px] border-gray-300 border-solid border-2 rounded-2xl px-8 py-5">
                   <div className="flex">
@@ -179,7 +177,7 @@ export default function Home() {
                     <h1 className="font-bold my-4">Sarah M.</h1>
                     <Image src={check} alt="check"/>
                   </div>
-                  <p className="text-base">"I'm blown away by the quality and style of the clothes I received from Shop.co. From casual wear to elegant dresses, every piece I've bought has exceeded my expectations.”</p>
+                  <p className="text-base">I am blown away by the quality and style of the clothes I received from Shop.co. From casual wear to elegant dresses, every piece Ive bought has exceeded my expectations.</p>
                 </div>
                 <div className="w-[400px] h-[240px] border-gray-300 border-solid border-2 rounded-2xl px-8 py-5">
                   <div className="flex">
@@ -193,7 +191,7 @@ export default function Home() {
                     <h1 className="font-bold my-4">Sarah M.</h1>
                     <Image src={check} alt="check"/>
                   </div>
-                  <p className="text-base">"I'm blown away by the quality and style of the clothes I received from Shop.co. From casual wear to elegant dresses, every piece I've bought has exceeded my expectations.”</p>
+                  <p className="text-base">I am blown away by the quality and style of the clothes I received from Shop.co. From casual wear to elegant dresses, every piece Ive bought has exceeded my expectations.</p>
                 </div>
               </CarouselItem>
             )
