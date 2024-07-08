@@ -1,9 +1,6 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
-import Image from 'next/image'
+import ReviewCard from '@/features/ReviewCard'
 import React from 'react'
-
-import check from '@/../public/check.svg'
-import star from '@/../public/Star.svg'
 
 export default function HappyCustomers() {
 
@@ -16,21 +13,8 @@ export default function HappyCustomers() {
         <CarouselContent >
           {
             a.map((value, index)=>
-              <CarouselItem className="flex justify-between" key={index}>
-                <div key={index} className="w-[400px] h-[240px] max-sm:h-[260px] border-gray-300 border-solid border-2 rounded-2xl px-8 py-5">
-                  <div className="flex">
-                    <Image src={star} alt=''/>
-                    <Image src={star} alt=''/>
-                    <Image src={star} alt=''/>
-                    <Image src={star} alt=''/>
-                    <Image src={star} alt=''/>
-                  </div>
-                  <div className="flex">
-                    <h1 className="font-bold my-4">Sarah M.</h1>
-                    <Image src={check} alt="check"/>
-                  </div>
-                  <p className="text-base">I am blown away by the quality and style of the clothes I received from Shop.co. From casual wear to elegant dresses, every piece Ive bought has exceeded my expectations.</p>
-                </div>
+              <CarouselItem>
+                <ReviewCard key={index}/>
               </CarouselItem>
             )
           }
