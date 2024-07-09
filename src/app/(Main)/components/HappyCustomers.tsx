@@ -13,8 +13,8 @@ export default function HappyCustomers() {
         <CarouselContent >
           {
             a.map((value, index)=>
-              <CarouselItem>
-                <ReviewCard key={index}/>
+              <CarouselItem key={index}>
+                <ReviewCard/>
               </CarouselItem>
             )
           }

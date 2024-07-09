@@ -63,7 +63,7 @@ export default function Header() {
             <DropdownMenuTrigger asChild>
               <button type='button' className='text-2xl font-bold rotate-90'>|||</button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent className='w-[200px] bg-white ml-6 mt-4'>
               <DropDownLinks data={LinksData}/>
             </DropdownMenuContent>
           </DropdownMenu>

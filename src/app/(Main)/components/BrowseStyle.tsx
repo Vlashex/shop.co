@@ -14,13 +14,13 @@ export default function BrowseStyle() {
       <h1 className="mx-auto text-center text-5xl mb-16">BROWSE BY dress STYLE</h1>
       <div className="flex flex-col gap-4 w-full">
         <div className="flex gap-4 max-md:flex-col">
-          <Link href='category?style=casual' className="w-1/3 max-md:w-full overflow-hidden rounded-3xl">
+          <Link href='shop?style=casual' className="w-1/3 max-md:w-full overflow-hidden rounded-3xl">
             <Card className="flex h-[289px] justify-end relative bg-white border-0">
               <h1 className="text-4xl absolute top-6 left-6">Casual</h1>
               <Image src={dressCodeImg1} alt="dressCodeImg1"/>
             </Card>
           </Link>
-          <Link href='category?style=formal' className="w-2/3 max-md:w-full overflow-hidden rounded-3xl">
+          <Link href='shop?style=formal' className="w-2/3 max-md:w-full overflow-hidden rounded-3xl">
             <Card className="flex h-[289px] justify-end relative bg-white border-0">
               <h1 className="text-4xl absolute top-6 left-6">Formal</h1>
               <Image src={dressCodeImg2} alt="dressCodeImg2"/>
@@ -28,13 +28,13 @@ export default function BrowseStyle() {
           </Link>
         </div>
         <div className="flex gap-4 max-md:flex-col">
-          <Link href='category?style=party' className="w-2/3 max-md:w-full overflow-hidden rounded-3xl">
+          <Link href='shop?style=party' className="w-2/3 max-md:w-full overflow-hidden rounded-3xl">
             <Card className="flex h-[289px] justify-end relative bg-white border-0">
               <h1 className="text-4xl absolute top-6 left-6">Party</h1>
               <Image src={dressCodeImg3} alt="dressCodeImg3"/>
             </Card>
           </Link>
-          <Link href='category?style=gym' className="w-1/3 max-md:w-full overflow-hidden rounded-3xl">
+          <Link href='shop?style=gym' className="w-1/3 max-md:w-full overflow-hidden rounded-3xl">
             <Card className="flex h-[289px] justify-end relative bg-white border-0">
               <h1 className="text-4xl absolute top-6 left-6">Gym</h1>
               <Image src={dressCodeImg4} alt="dressCodeImg4"/>
