@@ -5,9 +5,9 @@ import React from 'react'
 
 export default function Main() {
   return (
-    <section className="w-fill bg-[#F2F0F1]">
-      <div className="flex justify-center items-center max-w-[1440px] w-11/12 mx-auto max-lg:flex-col max-lg:items-center">
-        <div className="flex flex-col max-w-[630px] gap-8 md:p-24 max-md:py-10">
+    <section className="w-full bg-[#F2F0F1]">
+      <div className="flex w-11/12 max-w-[1240px] justify-between items-center mx-auto max-md:flex-col max-lg:items-center">
+        <div className="flex flex-col w-full md:max-w-[630px] gap-8 py-24">
           <h1 className="max-w-[557px] font-semibold text-6xl">FIND CLOTHES THAT MATCHES YOUR STYLE</h1>
           <h3 className="text-base">Browse through our diverse range of meticulously crafted garments, designed to bring out your individuality and cater to your sense of style.</h3>
           <Button className="bg-black text-white w-fit px-16 py-4 rounded-3xl">Shop Now</Button>
@@ -28,7 +28,7 @@ export default function Main() {
             </div>
           </div>
         </div>
-        <div className="flex-1 lg:self-end md:w-1/2 ">
+        <div className="flex-1 lg:self-end md:w-1/2 mt-auto">
           <Image width={1200} src={bgMain} alt=""/>
         </div>
       </div>

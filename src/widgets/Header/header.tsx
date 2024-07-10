@@ -56,9 +56,9 @@ export default function Header() {
   }
 
   return (
-    <header className='bg-white h-24 w-full mx-auto py-6 flex items-center justify-center max-w-[1440px]'>
+    <header className='bg-white h-24 w-full mx-auto py-6 flex items-center justify-center'>
       <nav className="flex w-11/12 max-w-[1240px] justify-between gap-4 lg:gap-10 items-center">
-        <div className="">
+        <div className="md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button type='button' className='text-2xl font-bold rotate-90'>|||</button>
@@ -68,14 +68,14 @@ export default function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <Link href='/' className='text-3xl font-bold'>SHOP.CO</Link>
+        <Link href='/' className='text-3xl font-bold mr-auto'>SHOP.CO</Link>
         <div className='flex flex-nowrap text-nowrap gap-3 lg:gap-6 max-md:hidden'>
           <Links data={LinksData}/>
         </div>
-        <InputWithButton placeholder='Search for products...' generalClassName='max-[400px]:hidden'/>
+        <InputWithButton placeholder='Search for products...' generalClassName='max-[500px]:hidden'/>
         <div className="gap-3 max-h-full items-center flex">
           <Drawer>
-            <DrawerTrigger asChild>
+            <DrawerTrigger asChild className='min-[500px]:hidden'>
               <button>
                 <svg width='20px' height='20px' viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#666666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
               </button>
