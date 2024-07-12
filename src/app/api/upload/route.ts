@@ -1,17 +1,24 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { uploadFile } from '@/lib/yandexDisk';
+import { uploadImage } from '@/lib/yandexDisk';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    const { imagePath, imageContent } = req.body;
+export async function POST(request: Request) {
 
-    try {
-      const uploadUrl = await uploadFile(imagePath, Buffer.from(imageContent, 'base64'));
-      res.status(200).json({ uploadUrl });
-    } catch (error) {
-      res.status(500).json({ error: 'Error uploading file' });
-    }
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
+  try {
+    const req = await request.json()
+
+    const imageBuffer = req.fileContent.data
+    const name = req.name
+
+    const uploadUrl = await uploadImage(imageBuffer, name);
+    
+    return new Response(JSON.stringify({ name: 'Image uploaded' }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 201 // Created
+    })
+  } catch (error) {
+    return new Response(JSON.stringify({ error: 'Failed to create sneakers card' }), {
+            headers: { 'Content-Type': 'application/json' },
+            status: 500 // Internal Server Error
+      }
+    );
   }
 }

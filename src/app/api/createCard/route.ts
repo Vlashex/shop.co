@@ -1,27 +1,31 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest } from 'next';
 import prisma from '../../../../prisma/prisma';
+import { NextResponse } from 'next/server';
 
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    const { title, rate, imageUrls, price, previousPrice } = req.body;
+export async function POST(req: NextApiRequest) {
 
-    try {
-      const product = await prisma.product.create({
-        data: {
-          title,
-          rate,
-          imageUrl: imageUrls,
-          price,
-          previousPrice,
-        },
-      });
-
-      res.status(200).json(product);
-    } catch (error) {
-      res.status(500).json({ error: 'Error creating product' });
-    }
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
+  const { title, rate, imageUrls, price, previousPrice } = req.body;
+  
+  try {
+    const card = await prisma.sneakersCard.create({
+      data: {
+        title,
+        rate,
+        images: imageUrls,
+        price,
+        previousPrice,
+      },
+    });
+    return new Response(JSON.stringify({ name: 'Create sneakers card',  card}), {
+            headers: { 'Content-Type': 'application/json' },
+            status: 201 // Created
+      }
+    );
+  } catch (error) {
+    return new Response(JSON.stringify({ error: 'Failed to create sneakers card' }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 500 // Internal Server Error
+    })
   }
 }

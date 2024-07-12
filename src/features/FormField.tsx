@@ -7,6 +7,7 @@ export const FormField: React.FC<any> = ({
   register,
   error,
   valueAsNumber,
+  multiple
 }) => (
   <>
     <input
@@ -14,6 +15,7 @@ export const FormField: React.FC<any> = ({
       placeholder={placeholder}
       {...register(name, { valueAsNumber })}
       className='w-full bg-gray-200 p-4 rounded-sm'
+      multiple={multiple || false}
     />
     {error && <span className="error-message text-sm text-red-500 -mt-4">{error.message}</span>}
   </>
