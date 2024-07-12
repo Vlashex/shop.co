@@ -1,23 +1,27 @@
-import { NextResponse } from "next/server";
-import prisma from "@/../prisma/prisma";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from 'next';
+import prisma from '../../../../prisma/prisma';
 
-export default async function POST(req: NextApiRequest, res: NextApiResponse) {
-  const { title, rate, imageUrls, price, previousPrice } = req.body;
 
-  try {
-    const product = await prisma.sneakersCard.create({
-      data: {
-        title,
-        rate,
-        images: imageUrls,
-        price,
-        previousPrice,
-      },
-    });
-    
-    res.status(200).json({ message: 200, product });
-  } catch (error) {
-    res.status(200).json({ error: 'Error creating product' });
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'POST') {
+    const { title, rate, imageUrls, price, previousPrice } = req.body;
+
+    try {
+      const product = await prisma.product.create({
+        data: {
+          title,
+          rate,
+          imageUrl: imageUrls,
+          price,
+          previousPrice,
+        },
+      });
+
+      res.status(200).json(product);
+    } catch (error) {
+      res.status(500).json({ error: 'Error creating product' });
+    }
+  } else {
+    res.status(405).json({ error: 'Method not allowed' });
   }
 }
