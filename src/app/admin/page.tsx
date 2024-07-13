@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { FormField } from '@/features/FormField';
+import createCardAction from './createCardAction';
 
 interface NewCard {
   title: string;
@@ -10,6 +11,20 @@ interface NewCard {
   images: File[];
 }
 
+function convertFilesToBase64(files: File[]): Promise<string[]> {
+    console.log(files)
+
+    const promises = files.map(file => {
+        return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = error => reject(error);
+        });
+    });
+    
+    return Promise.all(promises);
+}
 
 export default function Page() {
 
@@ -18,6 +33,14 @@ export default function Page() {
   const onSubmit: SubmitHandler<NewCard> = async (data) => {
     const { title, price, rate, images } = data;
 
+    const imagesBase64 = await convertFilesToBase64([...images])
+
+    const card = await createCardAction(title, price, rate, imagesBase64)
+
+    const { images: img, ...res } = card
+
+    console.log(res)
+  }
 
 
   return (
