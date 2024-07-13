@@ -1,8 +1,8 @@
 "use server"
 import crypto from 'crypto'
+import { SignJWT } from 'jose'
 import { prisma } from '../../../../../prisma/prisma';
 import { IRegister, IUser } from '@/lib/types';
-import { SignJWT } from 'jose';
 
 function hashValue(value: string) {
   const hash = crypto.createHash('sha256');
@@ -34,25 +34,36 @@ const jwtTokens = async(userId: number) => {
     }; 
 };
 
-export const SignUpAction = async ({email, name, password}: IRegister) => {
-  const isAlreadyExist = await prisma.user.findFirst({where: {email: email}})
-  if (isAlreadyExist != null) return null
+export const SignInWithEmailAction = async ({email, password:loginPassword}: Omit<IRegister, 'name'>) => {
 
-  const user:IUser = await prisma.user.create({data: {
-    email,
-    name,
-    password: hashValue(password),
-    cart: []
+  interface ResponseUser extends IUser {
+    password: string
+  }
+
+  const user:ResponseUser | null = await prisma.user.findFirst({where: {
+    AND: {
+      email: email,
+      password: hashValue(loginPassword)
+    }
   }})
-  const tokens = await prisma.tokens.create({ data: await jwtTokens(user.id) })
-  
-  const auth = {
-    user,
-    tokens: {
-      access_token: tokens.access_token,
-      refresh_token: tokens.refresh_token
+
+  if (user == null) return null
+
+  const tokens = await prisma.tokens.findFirst({where: {user_id: user.id}})
+
+  const {password, ...res} = user
+
+  if(tokens == null) {
+    const { user_id, ...newTokens }= await jwtTokens(user.id)
+
+    return {
+      user: res,
+      tokens: newTokens
     }
   }
 
-  return auth
+  return {
+    user: res,
+    tokens: tokens
+  }
 }

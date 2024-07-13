@@ -5,9 +5,12 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormField } from '@/features/FormField'
-import { Register } from '@/lib/types'
 import { SignUpAction } from '../actions/SignUpAction'
 import { useDispatch } from 'react-redux'
+import { setCredentials } from '@/lib/store/authSlice'
+import { useRouter } from 'next/navigation'
+import { IRegister } from '@/lib/types'
+import { useCookies } from 'react-cookie'
 
 
 
@@ -15,6 +18,8 @@ export default function SignUpUi() {
 
   const [isUserExist, setUserExist] = useState<boolean>(false)
   const dispatch = useDispatch()
+  const { replace } = useRouter()
+  const [ cookies, setCookies ] = useCookies(['access_token', 'refresh_token'])
 
   const UserSchema = z
   .object({
@@ -36,7 +41,7 @@ export default function SignUpUi() {
     path: ["confirmedPassword"], // path of error
   });
 
-  interface SignUp extends Register {
+  interface SignUp extends IRegister {
     confirmedPassword: string
   }
 
@@ -48,8 +53,10 @@ export default function SignUpUi() {
       const result = await SignUpAction(res)
       if ( result == null) setUserExist(true)
       else {
-        setUserExist(false)
-        console.log(result)
+        dispatch(setCredentials(result))
+        setCookies('access_token', result.tokens.access_token)
+        setCookies('refresh_token', result.tokens.refresh_token)
+        replace('/')
       }
     }
     signUp()

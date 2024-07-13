@@ -12,6 +12,7 @@ model User {
   email    String @unique
   name     String
   password String
+  cart     Int[]
 }
 
 model SneakersCard {
@@ -25,9 +26,9 @@ model SneakersCard {
 }
 
 model Tokens {
-  id                       Int    @id @default(autoincrement())
-  access_token             String
-  access_token_secret_key  String
-  refresh_token            String
-  refresh_token_secret_key String
+  id            Int      @id @default(autoincrement())
+  user_id       Int
+  access_token  String
+  refresh_token String
+  created_at    DateTime @default(now())
 }

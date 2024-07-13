@@ -1,16 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit/react";
-import { Auth } from "./types";
+import { IAuth } from "../types";
 
-const initialState:Auth = {
+const initialState:IAuth = {
     user: null,
-    token: null
+    tokens: null
 }
 
 const authSlice = createSlice({
     name: 'auth',
     initialState: initialState,
     reducers: {
-        setCredentials: (state: Auth, {payload}: {payload: Auth}) => {
+        setCredentials: (state: IAuth, {payload}: {payload: IAuth}) => {
             state = payload
         },
 
