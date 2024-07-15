@@ -1,3 +1,3 @@
-import Protuct from "./ui/protuct";
+import Protuct from "./ui/product";
 
 export default Protuct

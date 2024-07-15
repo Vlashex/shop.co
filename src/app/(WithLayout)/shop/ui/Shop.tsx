@@ -1,15 +1,16 @@
 import ProductCard from "@/features/ProductCard"
+import { prisma } from "../../../../../prisma/prisma"
 
-export default function Shop() {
+export default async function Shop() {
 
-  const a = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
+  const productData = await prisma.productCard.findMany()
 
   return (
     <div className="flex-1">
-        <div className="grid grid-cols-4 max-lg:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1 justify-items-center gap-2">
+        <div className="grid grid-cols-4 max-lg:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1 justify-items-center gap-y-8 justify-between">
           {
-            a.map((index)=>
-              <ProductCard key={index}/>
+            productData.map((value)=>
+              <ProductCard {...value} key={value.id}/>
             )
           }
         </div>

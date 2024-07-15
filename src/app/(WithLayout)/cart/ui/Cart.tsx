@@ -3,19 +3,26 @@ import CartProductCard from '../components/CartProductCard'
 import { Separator } from '@/components/ui/separator'
 import { InputWithButton } from '@/components/ui/inputWithButton'
 import { Button } from '@/components/ui/button'
+import { prisma } from '../../../../../prisma/prisma'
+import { getUserByAccessToken } from '@/lib/actions/getUserByAccessToken'
+import { cookies } from 'next/headers'
 
-export default function Cart() {
 
-    const a = [1,2,3,4]
+export default async function Cart() {
+
+    const cookiesStore = cookies()
+    const token = cookiesStore.get('access_token')
+    const user = token != undefined?(await getUserByAccessToken(token.value)):null
+    const cartData = user != null?(await prisma.productCard.findMany({where: {id: {in: user.cart}}})):[]
 
   return (
-    <main className='max-w-[1240px] mx-auto w-11/12'>
+    <main className='max-w-[1240px] mx-auto w-11/12 mb-auto'>
         <h1 className='text-[40px] font-semibold'>Your cart</h1>
         <div className="grid grid-cols-5 max-md:grid-cols-1 gap-3">
             <div className="grid col-span-3 justify-items-center justify-stretch grid-cols-1 flex-1 gap-4 border-solid border-[1px] border-gray-300 p-3 rounded-xl">
                 {
-                a.map((index)=>
-                    <CartProductCard key={index}/>
+                cartData.map((value, index)=>
+                    <CartProductCard {...value} key={index}/>
                 )
                 }
             </div>
@@ -24,20 +31,22 @@ export default function Cart() {
                 <div className="flex flex-col gap-3">
                     <div className="flex justify-between">
                         <h1 className='text-opacity-60'>Subtotal</h1>
-                        <h2 className='font-semibold'>$565</h2>
+                        <h2 className='font-semibold'>${(cartData.map((value)=>value.price)).reduce((a,b)=> a+b, 0)}</h2>
                     </div>
                     <div className="flex justify-between">
                         <h1 className='text-opacity-60'>Discount (-20%)</h1>
-                        <h2 className='font-semibold text-red-500'>-$113</h2>
+                        <h2 className='font-semibold text-red-500'>-$0</h2>
                     </div>
                     <div className="flex justify-between">
                         <h1 className='text-opacity-60'>Delivery Fee</h1>
-                        <h2 className='font-semibold'>$15</h2>
+                        <h2 className='font-semibold'>${(cartData.map((value)=>value.price)).length*5}</h2>
                     </div>
                     <Separator className='h-px bg-gray-300'/>
                     <div className="flex justify-between">
                         <h1 className='font-semibold'>Total</h1>
-                        <h2 className="text-xl font-semibold">$467</h2>
+                        <h2 className="text-xl font-semibold">
+                            ${(cartData.map((value)=>value.price)).reduce((a,b)=> a+b, 0)+(cartData.map((value)=>value.price)).length*5}
+                        </h2>
                     </div>
                 </div>
                 <form className="flex gap-3">

@@ -50,7 +50,7 @@ export default function Page() {
         {errors.title && <span>This field is required</span>}
         <FormField type='number' name='price' placeholder='price' register={register} />
         {errors.price && <span>This field is required</span>}
-        <FormField type='number' name='rate' placeholder='rate' register={register} />
+        <FormField type='float' name='rate' placeholder='rate' register={register} />
         {errors.rate && <span>This field is required</span>}
         <FormField type='file' multiple={true} name='images' placeholder='image' register={register} />
         {errors.images && <span>This field is required</span>}

@@ -15,7 +15,7 @@ model User {
   cart     Int[]
 }
 
-model SneakersCard {
+model ProductCard {
   id            Int      @id @default(autoincrement())
   title         String
   images        String[]

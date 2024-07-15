@@ -24,10 +24,8 @@ export async function middleware(request: NextRequest) {
         console.log(error)
         return NextResponse.redirect(new URL('/SignIn', request.url))
     }
-
-    return NextResponse.redirect(new URL('/SignIn', request.url))
 }
 
 export const config = {
-    matcher: ['/admin', '/profile', '/shop']
+    matcher: ['/profile', '/shop']
 }

@@ -14,7 +14,7 @@ export default async function createCardAction(title: string, price: string | nu
     }
     const rateF = typeof rate === 'string' ? parseFloat(rate) : rate;
 
-    const card = await prisma.sneakersCard.create({
+    const card = await prisma.productCard.create({
         data: {
             title,
             price: parsedPrice,

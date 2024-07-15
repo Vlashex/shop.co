@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "@/lib/store/StoreProvider";
+import { cn } from "@/lib/utils";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -19,7 +20,10 @@ export default function RootLayout({
   return (
      <StoreProvider>
         <html lang="en">
-          <body className={inter.className}>
+          <body className={cn(
+            'flex flex-col justify-between min-h-screen',
+            inter.className
+          )}>
             {children}
           </body>
         </html>
