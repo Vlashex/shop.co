@@ -14,8 +14,18 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/router";
 
 export default function Layout({ children }: { children: ReactElement }) {
+  const category = [
+    't-shirt',
+    'shorts',
+    'shirts',
+    'hoodie',
+    'jeans'
+  ]
   const sizes = [
     "XX-Small",
     "X-Small",
@@ -29,9 +39,11 @@ export default function Layout({ children }: { children: ReactElement }) {
   ];
 
   const searchParams = useParams();
-  const category = searchParams.category as string || ''
+  const router = useRouter()
+
+  // const category = searchParams.category as string || ''
   const selectedSizes = searchParams.sizes as string[] || []
-  const style = searchParams.style as string || ''
+  // const style = searchParams.style as string || ''
 
   return (
     <section className="max-w-[1240px] mx-auto w-11/12">
@@ -61,28 +73,26 @@ export default function Layout({ children }: { children: ReactElement }) {
                     Category
                   </AccordionTrigger>
                   <AccordionContent>
-                    <nav className="flex flex-col gap-2">
-                      <Link href={`?category=tshirts&style=${style}`}>
-                        T-shirts
-                      </Link>
-                      <Link href={`?category=sport&style=${style}`}>
-                        Shorts
-                      </Link>
-                      <Link href={`?category=shirts&style=${style}`}>
-                        Shirts
-                      </Link>
-                      <Link href={`?category=hoodies&style=${style}`}>
-                        Hoodie
-                      </Link>
-                      <Link href={`?category=jeans&style=${style}`}>Jeans</Link>
-                    </nav>
+                    {
+                      category.map((value, index) => 
+                        <Button onClick={()=>router.push({
+                          pathname: router.pathname,
+                          query: {
+                            ...router.query,
+                            searchTerm: ''
+                          }
+                        })}>{value}</Button>
+                      )
+                    }
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-2">
                   <AccordionTrigger className="hover:no-underline">
                     Price
                   </AccordionTrigger>
-                  <AccordionContent></AccordionContent>
+                  <AccordionContent>
+                    <Slider defaultValue={[299]} max={500} min={10} step={1}/>
+                  </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-3">
                   <AccordionTrigger className="hover:no-underline">
@@ -112,7 +122,7 @@ export default function Layout({ children }: { children: ReactElement }) {
                       {sizes.map((value) => (
                         <Link
                           key={value}
-                          href={`?category=${category}&style=${style}&sizes=${value}`}
+                          href={`?category=${category}&style=${'style'}&sizes=${value}`}
                           className={cn(
                             "w-full text-center py-2.5 bg-gray-200 rounded-3xl",
                             !!selectedSizes.find((el) => el == value)

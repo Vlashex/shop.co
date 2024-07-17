@@ -6,8 +6,6 @@ import Main from "./components/Main";
 
 export default function Home() {
 
-  const a = [1,2,3,4]
-
   return (
     <main>
       <Main/>
