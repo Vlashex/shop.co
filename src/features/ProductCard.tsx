@@ -9,7 +9,7 @@ export default function ProductCard(
   {id:number ,title:string, images:string[], price:number, previousPrice:number, rate:number, createdAt:any}) 
 {
   return (
-    <Link type="replace" href={`/product?prodId=${id}`}>
+    <Link type="replace" href={`/product?prodId=${id}`} className="w-fit">
       <Card className="w-[295px] h-[405px] p-0 border-0 outline-none shadow-none">
         <CardHeader className="w-[295px] h-[295px] overflow-hidden">
           <Image className="w-full h-full rounded-[20px]" src={images != undefined? images[0]: ''} width={400} height={400} alt="" />

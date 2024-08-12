@@ -49,21 +49,17 @@ export const SignInWithEmailAction = async ({email, password:loginPassword}: Omi
 
   if (user == null) return null
 
-  const tokens = await prisma.tokens.findFirst({where: {user_id: user.id}})
-
   const {password, ...res} = user
 
-  if(tokens == null) {
-    const { user_id, ...newTokens }= await jwtTokens(user.id)
+  const tokens = await prisma.tokens.create({
+    data: (await jwtTokens(user.id))
+  })
 
-    return {
-      user: res,
-      tokens: newTokens
-    }
-  }
+  const { id, user_id, created_at, ...tok } = tokens
 
   return {
     user: res,
-    tokens: tokens
+    tokens: tok
   }
+
 }

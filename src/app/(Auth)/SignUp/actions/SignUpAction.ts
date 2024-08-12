@@ -45,13 +45,12 @@ export const SignUpAction = async ({email, name, password}: IRegister) => {
     cart: []
   }})
   const tokens = await prisma.tokens.create({ data: await jwtTokens(user.id) })
+
+  const { id, user_id, created_at, ...tok } = tokens
   
   const auth = {
     user,
-    tokens: {
-      access_token: tokens.access_token,
-      refresh_token: tokens.refresh_token
-    }
+    tokens: tok
   }
 
   return auth
