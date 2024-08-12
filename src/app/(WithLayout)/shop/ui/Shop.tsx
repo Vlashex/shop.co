@@ -6,14 +6,11 @@ export default async function Shop({
 }: {
     searchParams: {[key: string]: string | string[]}
 }) {
-
-  const category = searchParams.category as string || ''
   const price = Number(searchParams.price as string) || 999999
-  const size = searchParams.size as string || ''
 
   const productData = await prisma.productCard.findMany({where: {
     AND: {
-      price: {lt: price}
+      price: {lt: price},
     }
   }})
 

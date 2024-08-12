@@ -4,9 +4,6 @@ import Link from "next/link";
 import React from "react";
 import Stars from "./Stars";
 
-
-
-
 export default function ProductCard(
   {id, title, images, price, previousPrice, rate, createdAt}:
   {id:number ,title:string, images:string[], price:number, previousPrice:number, rate:number, createdAt:any}) 

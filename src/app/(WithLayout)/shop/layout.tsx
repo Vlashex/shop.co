@@ -1,7 +1,6 @@
 "use client";
-import React, { ReactElement } from "react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
+import React, { ReactElement, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Accordion,
   AccordionContent,
@@ -16,7 +15,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/router";
 
 export default function Layout({ children }: { children: ReactElement }) {
   const category = [
@@ -37,13 +35,26 @@ export default function Layout({ children }: { children: ReactElement }) {
     "3X-Large",
     "4X-Large",
   ];
+  const styles = [
+    'casual',
+    'cringe'
+  ]
 
-  const searchParams = useParams();
+  const searchParams = useSearchParams();
   const router = useRouter()
 
-  // const category = searchParams.category as string || ''
-  const selectedSizes = searchParams.sizes as string[] || []
-  // const style = searchParams.style as string || ''
+  console.log(searchParams.getAll('categorys') as string[])
+
+  const [selectedCategory, setSelectedCategory] = useState<string[]>(searchParams.get('categorys')?.split(',') as string[] || [])
+  const [selectedPrice, setSelectedPrice] = useState<string>(searchParams.get('price') as string || '500')
+  const [selectedColors, setSelectedColors] = useState<string[]>(searchParams.get('colors')?.split(',') as string[] || [])
+  const [selectedSizes, setSelectedSizes] = useState<string[]>(searchParams.get('sizes')?.split(',') as string[] || [])
+  const [selectedStyles, setSelectedStyles] = useState<string[]>(searchParams.get('styles')?.split(',') as string[] || [])
+
+  const updateParams = () => {
+    router.replace(`/shop?categorys=${selectedCategory}&price=${selectedPrice}&colors=${selectedColors}&sizes=${selectedSizes}&styles=${selectedStyles}`)
+  }
+
 
   return (
     <section className="max-w-[1240px] mx-auto w-11/12">
@@ -73,17 +84,29 @@ export default function Layout({ children }: { children: ReactElement }) {
                     Category
                   </AccordionTrigger>
                   <AccordionContent>
-                    {
+                    <div className="grid grid-cols-3 gap-1">
+                      {
                       category.map((value, index) => 
-                        <Button onClick={()=>router.push({
-                          pathname: router.pathname,
-                          query: {
-                            ...router.query,
-                            searchTerm: ''
-                          }
-                        })}>{value}</Button>
+                        <Button
+                        key={index}
+                        className={cn(
+                          selectedCategory.find((el)=>el==value)
+                          ?'bg-black text-white'
+                          :''
+                        )}
+                        onClick={()=>{
+                          setSelectedCategory((prev)=>{
+                            if (!!prev.find((el)=>el==value)){
+                              return prev.filter((el)=> el!=value)
+                            }
+                            return [...prev, value]
+                          })
+                          updateParams()
+                        }}
+                        >{value}</Button>
                       )
                     }
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-2">
@@ -91,7 +114,16 @@ export default function Layout({ children }: { children: ReactElement }) {
                     Price
                   </AccordionTrigger>
                   <AccordionContent>
-                    <Slider defaultValue={[299]} max={500} min={10} step={1}/>
+                    <input type="range" value={selectedPrice} max={500} min={10} step={1} 
+                    onChangeCapture={(e:any)=>{
+                      const newValue = e.target.value
+                      console.log(e)
+                      setSelectedPrice(newValue);
+                      updateParams()
+                    }}
+                    className="w-full bg-black text-black"
+                    />
+                    {selectedPrice}
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-3">
@@ -99,18 +131,9 @@ export default function Layout({ children }: { children: ReactElement }) {
                     Colors
                   </AccordionTrigger>
                   <AccordionContent>
-                    <nav className="flex flex-col gap-2">
-                      <Link href={`?category=${category}&style=casual`}>
-                        Casual
-                      </Link>
-                      <Link href={`?category=${category}&style=formal`}>
-                        Formal
-                      </Link>
-                      <Link href={`?category=${category}&style=party`}>
-                        Party
-                      </Link>
-                      <Link href={`?category=${category}&style=gym`}>Gym</Link>
-                    </nav>
+                    {
+
+                    }
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-4">
@@ -118,21 +141,28 @@ export default function Layout({ children }: { children: ReactElement }) {
                     Size
                   </AccordionTrigger>
                   <AccordionContent>
-                    <div className="grid grid-cols-2 gap-2">
-                      {sizes.map((value) => (
-                        <Link
-                          key={value}
-                          href={`?category=${category}&style=${'style'}&sizes=${value}`}
-                          className={cn(
-                            "w-full text-center py-2.5 bg-gray-200 rounded-3xl",
-                            !!selectedSizes.find((el) => el == value)
-                              ? "bg-black text-white"
-                              : ""
-                          )}
-                        >
-                          {value}
-                        </Link>
-                      ))}
+                     <div className="grid grid-cols-2 gap-1">
+                      {
+                      sizes.map((value, index) => 
+                        <Button
+                        key={index}
+                        className={cn(
+                          selectedSizes.find((el)=>el==value)
+                          ?'bg-black text-white'
+                          :''
+                        )}
+                        onClick={()=>{
+                          setSelectedSizes((prev)=>{
+                            if (!!prev.find((el)=>el==value)){
+                              return prev.filter((el)=> el!=value)
+                            }
+                            return [...prev, value]
+                          })
+                          updateParams()
+                        }}
+                        >{value}</Button>
+                      )
+                    }
                     </div>
                   </AccordionContent>
                 </AccordionItem>
@@ -141,18 +171,29 @@ export default function Layout({ children }: { children: ReactElement }) {
                     Dress Style
                   </AccordionTrigger>
                   <AccordionContent>
-                    <nav className="flex flex-col gap-2">
-                      <Link href={`?category=${category}&style=casual`}>
-                        Casual
-                      </Link>
-                      <Link href={`?category=${category}&style=formal`}>
-                        Formal
-                      </Link>
-                      <Link href={`?category=${category}&style=party`}>
-                        Party
-                      </Link>
-                      <Link href={`?category=${category}&style=gym`}>Gym</Link>
-                    </nav>
+                    <div className="grid grid-cols-2 gap-1">
+                      {
+                      styles.map((value, index) => 
+                        <Button
+                        key={index}
+                        className={cn(
+                          selectedStyles.find((el)=>el==value)
+                          ?'bg-black text-white'
+                          :''
+                        )}
+                        onClick={()=>{
+                          setSelectedStyles((prev)=>{
+                            if (!!prev.find((el)=>el==value)){
+                              return prev.filter((el)=> el!=value)
+                            }
+                            return [...prev, value]
+                          })
+                          updateParams()
+                        }}
+                        >{value}</Button>
+                      )
+                    }
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>

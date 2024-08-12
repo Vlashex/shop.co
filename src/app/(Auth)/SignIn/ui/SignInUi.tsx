@@ -57,7 +57,7 @@ export default function SignInUi() {
             <FormField type='email'    name='email'    register={register}   error={errors.email}    placeholder='Enter your email'/>
             <FormField type='password' name='password' register={register}   error={errors.password} placeholder='Enter your password'/>
             {isUserExist? <label className='-mt-4 text-red-500'>User do not exist</label>: null}
-            <Button type='submit' className='bg-black text-white rounded-sm'>SignUp</Button>
+            <Button type='submit' className='bg-black text-white rounded-sm'>SignIn</Button>
         </form>
         <Link href='/SignUp'>SignUp</Link>
     </div>
