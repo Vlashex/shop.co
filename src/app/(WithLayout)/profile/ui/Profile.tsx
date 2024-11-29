@@ -1,26 +1,18 @@
 "use client"
 
-import { getUserByAccessToken } from '@/lib/actions/getUserByAccessToken'
+import { selectUser } from '@/lib/store/authSlice'
+import { RootState } from '@/lib/store/store'
 import { IUser } from '@/lib/types'
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 import { useCookies } from 'react-cookie'
+import { useSelector } from 'react-redux'
 
 
 
 export default function Profile() {
 
     const [cookies, setCookies] = useCookies(['access_token'])
-    const [user, setUser] = useState<IUser | null>(null)
-    
-
-    useLayoutEffect(()=>{
-        const getUser = async() => {
-            setUser(await getUserByAccessToken(cookies.access_token))
-        }
-        getUser()
-    },[])
-    
-    
+    const [user, setUser] = useState<IUser | null>(useSelector((state:RootState) => state.auth.user))
 
   return (
     <section className="flex flex-col flex-1 h-[900px] items-center justify-center">

@@ -7,19 +7,21 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { FormField } from '@/features/FormField'
 import { useDispatch } from 'react-redux'
 import { setCredentials } from '@/lib/store/authSlice'
-import { useRouter } from 'next/navigation'
 import { IRegister } from '@/lib/types'
 import { SignInWithEmailAction } from '../actions/SignInAction'
 import Link from 'next/link'
 import { useCookies } from 'react-cookie'
+
+import { useRouter } from 'next/navigation'
 
 
 export default function SignInUi() {
 
   const [isUserExist, setUserExist] = useState<boolean>(false)
   const dispatch = useDispatch()
-  const { replace } = useRouter()
+  const router = useRouter()
   const [ cookies, setCookies ] = useCookies(['access_token', 'refresh_token'])
+
 
   const UserSchema = z
   .object({
@@ -38,13 +40,12 @@ export default function SignInUi() {
   const onSubmit = (data:Omit<IRegister, 'name'>) => {
   	const signIn = async() => {
       const result = await SignInWithEmailAction(data)
-      console.log(result)
-      if ( result == null) setUserExist(true)
+      if ( result == null || result.tokens == null) setUserExist(true)
       else {
         dispatch(setCredentials(result))
         setCookies('access_token', result.tokens.access_token)
         setCookies('refresh_token', result.tokens.refresh_token)
-        replace('/')
+        // router.push('/')
       }
     }
     signIn()

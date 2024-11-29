@@ -17,6 +17,8 @@ export async function middleware(request: NextRequest) {
     const cookies = parse(cookie || '')
     const token = cookies.access_token
 
+    if (token == undefined) return NextResponse.redirect(new URL('/SignIn', request.url));
+
     try {
         await jwtVerify(token, new TextEncoder().encode(secretKey))
         return NextResponse.next()

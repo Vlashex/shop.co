@@ -11,7 +11,7 @@ const authSlice = createSlice({
     initialState: initialState,
     reducers: {
         setCredentials: (state: IAuth, {payload}: {payload: IAuth}) => {
-            state = payload
+            return payload
         },
 
     },

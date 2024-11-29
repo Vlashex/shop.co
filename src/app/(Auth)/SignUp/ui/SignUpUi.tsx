@@ -11,6 +11,8 @@ import { setCredentials } from '@/lib/store/authSlice'
 import { useRouter } from 'next/navigation'
 import { IRegister } from '@/lib/types'
 import { useCookies } from 'react-cookie'
+import { createHash } from 'crypto'
+import { hashValue } from '@/lib/functions/hashValue'
 
 
 
@@ -49,6 +51,7 @@ export default function SignUpUi() {
 
   const onSubmit = (data:SignUp) => {
     const {confirmedPassword, ...res} = data
+    res.password = hashValue(res.password)
   	const signUp = async() => {
       const result = await SignUpAction(res)
       if ( result == null) setUserExist(true)
@@ -66,7 +69,7 @@ export default function SignUpUi() {
     <div className='w-[400px] bg-white flex flex-col gap-8 rounded-xl overflow-hidden justify-center items-center px-8 py-16'>
         <h1 className='text-2xl'>Registration</h1>
         <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-5 w-full'>
-            <FormField type='text'     name='name'               register={register}   error={errors.name}          placeholder='Enter your name'/>
+            <FormField type='name'     name='name'               register={register}   error={errors.name}          placeholder='Enter your name'/>
             <FormField type='email'    name='email'              register={register}   error={errors.email}             placeholder='Enter your email'/>
             {isUserExist? <label className='-mt-4 text-red-500'>User is already exist</label>: null}
             <FormField type='password' name='password'           register={register}   error={errors.password}          placeholder='Enter your password'/>
