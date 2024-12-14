@@ -1,28 +1,35 @@
-'use server'
-import { PrismaClient } from "@prisma/client"
+"use server";
+
+import { INewCard } from "@/lib/types";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
 
-const prisma = new PrismaClient()
+export default async function createCardAction(
+  title: string,
+  price: string | number,
+  rate: number,
+  images: string[]
+): Promise<INewCard | null> {
+  const parsedPrice = typeof price === "string" ? parseFloat(price) : price;
 
-export default async function createCardAction(title: string, price: string | number, rate: number, images: string[]) {
-    // Преобразуем price к числу, если он является строкой
-    const parsedPrice = typeof price === 'string' ? parseFloat(price) : price;
 
-    // Проверка, что price после преобразования является числом
-    if (isNaN(parsedPrice)) {
-        throw new Error('Invalid value provided for price. Expected a number.');
-    }
-    const rateF = typeof rate === 'string' ? parseFloat(rate) : rate;
-
-    const card = await prisma.productCard.create({
-        data: {
-            title,
-            price: parsedPrice,
-            rate: rateF,
-            images,
-            previousPrice: parsedPrice
-        }
-    });
+  try {
+    const card: INewCard | null = await axios
+      .post<INewCard>(process.env.BACKEND_HOST+"/products", {
+        title:title,
+        price:parsedPrice,
+        rate: Number(rate),
+        images: images,
+      })
+      .then((responce: AxiosResponse) => responce.data)
+      .catch((err: AxiosError) => {
+        console.log(err);
+        return null;
+      });
 
     return card;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
 }

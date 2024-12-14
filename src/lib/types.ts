@@ -15,3 +15,16 @@ export interface IAuth {
     user: IUser | null
     tokens: ITokens | null
 }
+
+export interface INewCard {
+  title: string;
+  price: number;
+  rate: number;
+  images: string[];
+}
+
+
+export interface ICard extends INewCard {
+  id: number;
+  previousPrice: number,
+}

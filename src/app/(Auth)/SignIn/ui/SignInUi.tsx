@@ -45,7 +45,7 @@ export default function SignInUi() {
         dispatch(setCredentials(result))
         setCookies('access_token', result.tokens.access_token)
         setCookies('refresh_token', result.tokens.refresh_token)
-        // router.push('/')
+        router.push('/')
       }
     }
     signIn()

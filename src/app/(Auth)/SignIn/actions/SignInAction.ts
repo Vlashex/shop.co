@@ -29,11 +29,9 @@ import axios from "axios";
 
 export const SignInWithEmailAction = async ({email, password: loginPassword}: Omit<IRegister, 'name'>) => {
 
-  const auth:IAuth | null = await axios.post<IAuth>('http://localhost:4200/api/users/signin', {
-    data: {
-      email,
-      password: hashValue(loginPassword)
-    }
+  const auth:IAuth | null = await axios.post<IAuth>(process.env.BACKEND_HOST+'/users/signin', {
+      email: String(email),
+      password: String(hashValue(loginPassword))
   })
   .then((res)=>res.data)
   .catch((err)=>console.log(err)) || null

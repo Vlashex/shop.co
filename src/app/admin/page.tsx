@@ -12,9 +12,8 @@ interface NewCard {
 }
 
 function convertFilesToBase64(files: File[]): Promise<string[]> {
-    console.log(files)
-
-    const promises = files.map(file => {
+  console.log(files[0])
+  const promises = files.map(file => {
         return new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -26,6 +25,13 @@ function convertFilesToBase64(files: File[]): Promise<string[]> {
     return Promise.all(promises);
 }
 
+function convertFilesToBuffer(files: File[]): Promise<Buffer[]> {
+  const promises = [...files].map(async(file) => {
+        return Buffer.from(await file.arrayBuffer())
+    });
+  return Promise.all(promises)
+}
+
 export default function Page() {
 
   const { register, handleSubmit, formState: { errors } } = useForm<NewCard>();
@@ -35,7 +41,16 @@ export default function Page() {
 
     const imagesBase64 = await convertFilesToBase64([...images])
 
+    console.log(imagesBase64)
+    console.log(images)
+
+    // const imagesBuffer = await convertFilesToBuffer(images)
+
+    // console.log(imagesBuffer)
+
     const card = await createCardAction(title, price, rate, imagesBase64)
+
+    if (card === null) return;
 
     const { images: img, ...res } = card
 

@@ -14,7 +14,7 @@ interface Responce {
 }
 
 export const SignUpAction = async ({email, name, password}: IRegister) => {
-    const responce: Responce = await axios.post('http://localhost:4200/api/users/signup', {
+    const responce: Responce = await axios.post(process.env.BACKEND_HOST+'/users/signup', {
     name:name,
     email:email,
     password: hashValue(password),
