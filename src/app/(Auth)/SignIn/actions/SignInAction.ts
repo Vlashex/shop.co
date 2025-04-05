@@ -36,6 +36,24 @@ export const SignInWithEmailAction = async ({email, password: loginPassword}: Om
   .then((res)=>res.data)
   .catch((err)=>console.log(err)) || null
 
+<<<<<<< HEAD
   return auth
   
+=======
+  if (user == null) return null
+
+  const {password, ...res} = user
+
+  const tokens = await prisma.tokens.create({
+    data: (await jwtTokens(user.id))
+  })
+
+  const { id, user_id, created_at, ...tok } = tokens
+
+  return {
+    user: res,
+    tokens: tok
+  }
+
+>>>>>>> c66cb9db88ae05b44ac963adadfcc16460f44f54
 }

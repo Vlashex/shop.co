@@ -18,6 +18,7 @@ export const SignUpAction = async ({email, name, password}: IRegister) => {
     name:name,
     email:email,
     password: hashValue(password),
+<<<<<<< HEAD
   })
   .then((resp: AxiosResponse<IAuth>) => {return{
       data: resp.data,
@@ -27,6 +28,18 @@ export const SignUpAction = async ({email, name, password}: IRegister) => {
       data: null,
       error: error.response?.data || null
     }})
+=======
+    cart: []
+  }})
+  const tokens = await prisma.tokens.create({ data: await jwtTokens(user.id) })
+
+  const { id, user_id, created_at, ...tok } = tokens
+  
+  const auth = {
+    user,
+    tokens: tok
+  }
+>>>>>>> c66cb9db88ae05b44ac963adadfcc16460f44f54
 
   return responce
 }

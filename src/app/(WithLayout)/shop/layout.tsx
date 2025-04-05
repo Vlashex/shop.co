@@ -65,7 +65,7 @@ export default function Layout({ children }: { children: ReactElement }) {
   };
 
   return (
-    <section className="max-w-[1240px] mx-auto w-11/12">
+    <section className="max-w-[1240px] mx-auto w-11/12 flex-1">
       <div className="flex items-center gap-5">
         <DropdownMenu>
           <DropdownMenuTrigger className="flex justify-between items-center text-3xl py-5 w-[295px] text-start active:border-0">
@@ -208,7 +208,6 @@ export default function Layout({ children }: { children: ReactElement }) {
             </Accordion>
           </DropdownMenuContent>
         </DropdownMenu>
-        <h1 className="text-3xl">Casual</h1>
       </div>
       {children}
     </section>

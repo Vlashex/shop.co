@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { FormField } from '@/features/FormField';
 import createCardAction from './createCardAction';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 interface NewCard {
   title: string;
@@ -57,6 +58,29 @@ export default function Page() {
     console.log(res)
   }
 
+  const category = [
+    't-shirt',
+    'shorts',
+    'shirts',
+    'hoodie',
+    'jeans'
+  ]
+  const sizes = [
+    "XX-Small",
+    "X-Small",
+    "Small",
+    "Medium",
+    "Large",
+    "X-Large",
+    "XX-Large",
+    "3X-Large",
+    "4X-Large",
+  ];
+  const styles = [
+    'casual',
+    'cringe'
+  ]
+
 
   return (
     <div className="flex mx-auto max-w-[900px] w-11/12">
@@ -64,6 +88,13 @@ export default function Page() {
         <FormField type='text' name='title' placeholder='title' register={register} />
         {errors.title && <span>This field is required</span>}
         <FormField type='number' name='price' placeholder='price' register={register} />
+        <ToggleGroup type="single">
+          {
+            category.map((value, index) => 
+              <ToggleGroupItem key={index} value={value}  aria-label={`Toggle ${value}`}>{value}</ToggleGroupItem>
+            )
+          }
+        </ToggleGroup>
         {errors.price && <span>This field is required</span>}
         <FormField type='float' name='rate' placeholder='rate' register={register} />
         {errors.rate && <span>This field is required</span>}
