@@ -1,7 +1,6 @@
 import ProductCard from "@/features/ProductCard"
 import { getProducts } from "@/lib/actions/getProducts"
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 export default async function Shop({
     searchParams
