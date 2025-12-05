@@ -16,6 +16,7 @@ import { hashValue } from "@/lib/functions/hashValue";
 
 export default function SignUpUi() {
   const [registerError, setRegisterError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const { replace } = useRouter();
   const [cookies, setCookies] = useCookies(["access_token", "refresh_token"]);
@@ -46,16 +47,19 @@ export default function SignUpUi() {
   } = useForm<SignUp>({ resolver: zodResolver(UserSchema) });
 
   const onSubmit = async(formdData: SignUp) => {
+    setIsLoading(true);
     const { confirmedPassword, ...cred } = formdData;
     const credentials:IRegister = {
       ...cred,
       password: hashValue(formdData.password),
     };
 
+    console.log(credentials)
     const { error, data } = await SignUpAction(credentials);
 
     if (error !== null) {
       setRegisterError(error.message);
+      setIsLoading(false);
       return;
     }
     if (data !== null) {
@@ -65,13 +69,14 @@ export default function SignUpUi() {
       replace("/");
     }
     if (data === null && error === null) {
-      setRegisterError("Something wrong")
+      setRegisterError("Something wrong");
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="w-[400px] bg-white flex flex-col gap-8 rounded-xl overflow-hidden justify-center items-center px-8 py-16">
-      <h1 className="text-2xl">Registration</h1>
+    <div className="w-[400px] bg-white flex flex-col gap-8 rounded-xl overflow-hidden justify-center items-center px-8 py-16 shadow-lg">
+      <h1 className="text-2xl font-semibold">Registration</h1>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-5 w-full"
@@ -90,9 +95,11 @@ export default function SignUpUi() {
           error={errors.email}
           placeholder="Enter your email"
         />
-        {registerError != null ? (
-          <label className="-mt-4 text-red-500">{registerError}</label>
-        ) : null}
+        {registerError != null && (
+          <label className="-mt-4 text-red-500">
+            {registerError}
+          </label>
+        )}
         <FormField
           type="password"
           name="password"
@@ -107,7 +114,12 @@ export default function SignUpUi() {
           error={errors.confirmedPassword}
           placeholder="Confirm password"
         />
-        <Button className="bg-black text-white rounded-sm">SignUp</Button>
+        <Button
+          className="bg-black text-white rounded-sm w-full transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95"
+          disabled={isLoading}
+        >
+          {isLoading ? 'Signing up...' : 'SignUp'}
+        </Button>
       </form>
     </div>
   );

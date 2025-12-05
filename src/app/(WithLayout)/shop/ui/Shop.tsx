@@ -1,17 +1,33 @@
+'use client'
 import ProductCard from "@/features/ProductCard"
 import { getProducts } from "@/lib/actions/getProducts"
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
-export default async function Shop({
-    searchParams
-}: {
-    searchParams: {[key: string]: string | string[] | undefined} & {"page":number}
-}) {
-  const {page} = searchParams
+export default function Shop() {
+  const searchParams = useSearchParams();
+  const page = Number(searchParams.get('page')) || 1;
+  const [productData, setProductData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const productData = await getProducts(0 + 10*((page || 1)-1), 20) || [];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      const data = await getProducts(0 + 10*((page || 1)-1), 20) || [];
+      setProductData(data);
+      setLoading(false);
+    };
+    fetchProducts();
+  }, [page]);
 
-  //categorys, price, colors, sizes, styles
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center h-96">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1">
@@ -25,14 +41,24 @@ export default async function Shop({
           }
         </div>
 
-        <div className="flex justify-between mt-8">
-          <Link className={
-            "text-xl"
-          } href={page<=1?"":`/shop?page=${Number(page)-1}`}>prev page</Link>
-          <h1>{page}</h1>
-          <Link className={
-            "text-xl"
-          } href={productData.length<20?"":`/shop?page=${(page!=undefined?Number(page)+1:1)}`}>next page</Link>
+        <div className="flex justify-between mt-8 items-center">
+          <div className="transition-transform duration-300 hover:scale-105 active:scale-95">
+            <Link
+              className="text-xl transition-colors duration-300 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              href={page<=1?"":`/shop?page=${Number(page)-1}`}
+            >
+              prev page
+            </Link>
+          </div>
+          <h1 className="text-xl font-semibold">{page}</h1>
+          <div className="transition-transform duration-300 hover:scale-105 active:scale-95">
+            <Link
+              className="text-xl transition-colors duration-300 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              href={productData.length<20?"":`/shop?page=${(page!=undefined?Number(page)+1:1)}`}
+            >
+              next page
+            </Link>
+          </div>
         </div>
     </div>
   )

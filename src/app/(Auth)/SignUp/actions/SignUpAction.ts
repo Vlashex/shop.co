@@ -14,6 +14,8 @@ interface Responce {
 }
 
 export const SignUpAction = async ({email, name, password}: IRegister) => {
+    console.log(email, name, password)
+
     const responce: Responce = await axios.post(process.env.BACKEND_HOST+'/users/signup', {
     name:name,
     email:email,
@@ -23,10 +25,11 @@ export const SignUpAction = async ({email, name, password}: IRegister) => {
       data: resp.data,
       error: null
     }})
-  .catch((error:AxiosError<Err>) => {return{
+  .catch((error:AxiosError<Err>) => {
+    console.log(error)
+    return{
       data: null,
       error: error.response?.data || null
     }})
-
   return responce
 }
