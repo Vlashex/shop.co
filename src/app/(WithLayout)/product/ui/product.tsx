@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import SuggestedProducts from "@/features/SuggestedProducts";
@@ -12,7 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 export default function Protuct() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const prodId = Number(searchParams.get('prodId')) || 1;
+  const prodId = Number(searchParams.get("prodId")) || 1;
   const [productData, setProductData] = useState<ICard | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -20,7 +20,7 @@ export default function Protuct() {
     const fetchProduct = async () => {
       const data = await getProductById(prodId);
       if (data === null) {
-        router.push('/shop');
+        router.push("/shop");
         return;
       }
       setProductData(data);
@@ -47,24 +47,24 @@ export default function Protuct() {
             {[0, 1, 2].map((index) => (
               <div
                 key={index}
-                className="flex-1 overflow-y-hidden rounded-[20px] cursor-pointer transition-transform duration-300 hover:scale-105"
+                className="flex-1 overflow-hidden rounded-[20px] cursor-pointer transition-transform duration-300 hover:scale-105"
               >
-                <Image
+                <img
                   className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
                   width={200}
                   height={200}
-                  src={process.env.BACKEND_HOST + productData.images[0]}
+                  src={productData.images[0]}
                   alt=""
                 />
               </div>
             ))}
           </div>
-          <div className="lg:h-full lg:flex-[77] max-lg:w-full max-lg:h-full transition-transform duration-300 hover:scale-[1.02]">
-            <Image
-              className="w-full h-auto rounded-[20px]"
+          <div className="lg:h-full lg:flex-[77] rounded-[20px]  max-lg:w-full max-lg:h-full overflow-hidden">
+            <img
+              className="w-full h-auto transition-transform duration-300 hover:scale-105"
               width={1200}
               height={1200}
-              src={process.env.BACKEND_HOST + productData.images[0]}
+              src={productData.images[0]}
               alt=""
             />
           </div>
@@ -84,7 +84,10 @@ export default function Protuct() {
                   </h2>
                   <h3 className="text-[#FF3333] bg-[rgba(255,51,51,.1)] rounded-3xl py-1.5 px-3.5">
                     -
-                    {Math.round(100 - (productData.price / productData.previousPrice) * 100)}
+                    {Math.round(
+                      100 -
+                        (productData.price / productData.previousPrice) * 100
+                    )}
                     %
                   </h3>
                 </>

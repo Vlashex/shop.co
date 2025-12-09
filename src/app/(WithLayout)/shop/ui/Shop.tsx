@@ -1,6 +1,6 @@
 'use client'
 import ProductCard from "@/features/ProductCard"
-import { getProducts } from "@/lib/actions/getProducts"
+import { getProductsAction } from "@/app/actions/products"
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -13,8 +13,10 @@ export default function Shop() {
 
   useEffect(() => {
     const fetchProducts = async () => {
+      console.log(page, 'page')
       setLoading(true);
-      const data = await getProducts(0 + 10*((page || 1)-1), 20) || [];
+      const data = await getProductsAction(0 + 10*((page || 1)-1), 20) || [];
+      console.log(data, 'data')
       setProductData(data);
       setLoading(false);
     };

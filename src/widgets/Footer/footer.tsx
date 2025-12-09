@@ -46,7 +46,7 @@ export default function Footer() {
   return (
     <footer className='w-full bg-[#F0F0F0] mt-[170px] relative pt-[140px] pb-10'>
         <div className="max-w-[1240px] w-11/12 mx-auto absolute bg-black h-[180px] left-1/2 -translate-x-1/2 -top-[90px] rounded-2xl flex px-8 py-10 md:gap-20 gap-2 max-md:flex-col justify-between">
-            <h1 className='xl:text-[40px] md:text-[30px] text-[20px] text-white text-wrap w-1/2 max-md:w-full'>STAY UPTO DATE ABOUT OUR LATEST OFFERS</h1>
+            <h1 className='xl:text-[40px] md:text-[30px] text-[20px] text-white text-wrap w-1/2 max-md:w-full'>STAY UP TO DATE ABOUT OUR LATEST OFFERS</h1>
             <div className="w-1/2 max-md:w-full">
                 <form action="" className='max-md:flex items-center'>
                     <InputWithButton placeholder='Enter your email address' className='bg-white rounded-3xl w-full' generalClassName='max-md:w-3/5'/>

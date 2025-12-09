@@ -1,5 +1,5 @@
 "use client";
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Accordion,
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
+import { IFilters, TCategory, TColor, TSize, TStyle } from "@/lib/types";
 
 export default function Layout({ children }: { children: ReactElement }) {
   const category: string[] = ["t-shirt", "shorts", "shirts", "hoodie", "jeans"];
@@ -31,16 +32,15 @@ export default function Layout({ children }: { children: ReactElement }) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [filters, setFilters] = useState({
-    page: Number(searchParams.get("page") || 0),
-    categorys: searchParams.get("categorys")?.split(",") || [],
+  const [filters, setFilters] = useState<IFilters>({
+    page: Number(searchParams.get("page") || 1),
+    categorys: (searchParams.get("categorys")?.split(",") as TCategory[]) || [],
     price: searchParams.get("price") || "500",
-    colors: searchParams.get("colors")?.split(",") || [],
-    sizes: searchParams.get("sizes")?.split(",") || [],
-    styles: searchParams.get("styles")?.split(",") || [],
+    colors: (searchParams.get("colors")?.split(",") as TColor[]) || [],
+    sizes: (searchParams.get("sizes")?.split(",") as TSize[]) || [],
+    styles: (searchParams.get("styles")?.split(",") as TStyle[]) || [],
   });
-
-  if (filters.page === 0) router.replace('/shop?page=1')
+  
 
   const updateFilter = (key: string, value: any) => {
     setFilters((prev) => ({
@@ -49,7 +49,12 @@ export default function Layout({ children }: { children: ReactElement }) {
     }));
   };
 
-  if (filters.page === 0) router.replace("/shop?page=1");
+  useEffect(() => {
+    if (filters.page === 0) {
+      router.replace('/shop?page=1');
+    }
+  }, [filters.page, router]);
+  
 
   const updateParams = () => {
     const query = new URLSearchParams({

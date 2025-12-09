@@ -1,33 +1,26 @@
 "use server";
 
-import { INewCard } from "@/lib/types";
-import axios, { AxiosError, AxiosResponse } from "axios";
-
+import { INewCard, ICard } from "@/lib/types";
+import { createProductAction } from "@/app/actions/products";
 
 export default async function createCardAction(
   title: string,
-  price: string | number,
+  price: number,
   rate: number,
   images: string[]
 ): Promise<INewCard | null> {
-  const parsedPrice = typeof price === "string" ? parseFloat(price) : price;
-
-
   try {
-    const card: INewCard | null = await axios
-      .post<INewCard>(process.env.BACKEND_HOST+"/products", {
-        title:title,
-        price:parsedPrice,
-        rate: Number(rate),
-        images: images,
-      })
-      .then((responce: AxiosResponse) => responce.data)
-      .catch((err: AxiosError) => {
-        console.log(err);
-        return null;
-      });
+    const card: ICard | null = await createProductAction({
+      title,
+      price,
+      rate,
+      images,
+    });
 
-    return card;
+    if (!card) return null;
+
+    const { id, previousPrice, ...newCard } = card;
+    return newCard;
   } catch (err) {
     console.log(err);
     return null;

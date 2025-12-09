@@ -52,9 +52,9 @@ export default function CartProductCard(
   return (
     <div className="flex h-[124px] gap-3 w-full p-2 rounded-lg transition-all duration-300 hover:bg-gray-50 hover:translate-x-1">
       <div className="transition-transform duration-300 hover:scale-105">
-        <Image
+        <img
           className="w-auto h-full rounded-[9px] object-cover"
-          src={process.env.BACKEND_HOST || "http://localhost:4200/api" + images[0]}
+          src={images[0]}
           width={300}
           height={300}
           alt=""

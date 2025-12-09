@@ -1,35 +1,39 @@
-"use server"
-import { hashValue } from '@/lib/functions/hashValue';
-import { IAuth, IRegister } from '@/lib/types';
-import axios, { AxiosError, AxiosResponse } from 'axios'
+"use server";
+
+import { hashValue } from "@/lib/functions/hashValue";
+import { IAuth, IRegister } from "@/lib/types";
+import { signUpAction } from "@/app/actions/users";
 
 interface Err {
-  statusCode: number
-  message: string
+  statusCode: number;
+  message: string;
 }
 
-interface Responce {
-  data: IAuth | null,
-  error: Err | null
+interface Response {
+  data: IAuth | null;
+  error: Err | null;
 }
 
-export const SignUpAction = async ({email, name, password}: IRegister) => {
-    console.log(email, name, password)
+export const SignUpAction = async (payload: IRegister): Promise<Response> => {
+  try {
+    const credentials: IRegister = {
+      ...payload,
+      password: hashValue(payload.password),
+    };
 
-    const responce: Responce = await axios.post(process.env.BACKEND_HOST+'/users/signup', {
-    name:name,
-    email:email,
-    password: hashValue(password),
-  })
-  .then((resp: AxiosResponse<IAuth>) => {return{
-      data: resp.data,
-      error: null
-    }})
-  .catch((error:AxiosError<Err>) => {
-    console.log(error)
-    return{
+    const result = await signUpAction(credentials);
+
+    return {
+      data: result.data,
+      error: result.error,
+    };
+  } catch (err) {
+    return {
       data: null,
-      error: error.response?.data || null
-    }})
-  return responce
-}
+      error: {
+        statusCode: 500,
+        message: "Internal error",
+      },
+    };
+  }
+};

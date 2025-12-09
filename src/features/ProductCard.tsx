@@ -16,7 +16,7 @@ export default function ProductCard(
           <CardHeader className="w-[295px] h-[295px] overflow-hidden rounded-[20px] relative">
             <img
               className="w-full h-full rounded-[20px] object-cover transition-transform duration-500 group-hover:scale-110"
-              src={process.env.BACKEND_HOST + images[0] || ''}
+              src={images[0] || ''}
               width={400}
               height={400}
               alt=""
