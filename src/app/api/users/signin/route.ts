@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserByEmail, getUserPassword, setTokenUserId } from '@/lib/mock-db';
+import { getUserByEmail, getUserPassword } from '@/lib/mock-db';
 import { IAuth, ITokens } from '@/lib/types';
 import { hashValue } from '@/lib/functions/hashValue';
 
@@ -42,7 +42,6 @@ export async function POST(request: NextRequest) {
     }
 
     const tokens = generateTokens();
-    setTokenUserId(tokens.access_token, user.id);
     
     const response: IAuth = {
       user,

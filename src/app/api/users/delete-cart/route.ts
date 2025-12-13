@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { removeFromCart, getUserIdFromToken } from '@/lib/mock-db';
+import { removeFromCart } from '@/lib/mock-db';
+import { getUserIdFromToken } from '@/lib/functions/getUserIdFromToken';
 
 // PATCH /api/users/delete-cart - удалить товар из корзины
 export async function PATCH(request: NextRequest) {
@@ -17,7 +18,7 @@ export async function PATCH(request: NextRequest) {
     }
     
     // Извлекаем userId из токена
-    const userId = getUserIdFromToken(authHeader);
+    const userId = await getUserIdFromToken(authHeader);
     
     if (!userId) {
       return NextResponse.json(

@@ -155,6 +155,10 @@ export function getProductsByIds(ids: number[]): ICard[] {
 export function createProduct(data: INewCard): ICard {
   const newProduct: ICard = {
     id: db.nextProductId++,
+    sizes: [],
+    styles: [],
+    category: "",
+    colors: [],
     ...data,
     previousPrice: data.price * 1.2,
   };

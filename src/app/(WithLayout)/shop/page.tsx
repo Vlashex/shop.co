@@ -1,3 +1,13 @@
-import Shop from "./ui/Shop";
+import { Suspense } from "react";
+import ShopLayoutClient from "./ui/ShopLayoutClient";
+import ShopContent from "./ui/Shop";
 
-export default Shop
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <ShopLayoutClient>
+        <ShopContent />
+      </ShopLayoutClient>
+    </Suspense>
+  );
+}

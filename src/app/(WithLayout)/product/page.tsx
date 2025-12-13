@@ -1,3 +1,10 @@
-import Protuct from "./ui/product";
+import { Suspense } from "react";
+import ProductClient from "./ui/product";
 
-export default Protuct
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProductClient />
+    </Suspense>
+  );
+}
