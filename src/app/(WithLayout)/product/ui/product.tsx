@@ -49,7 +49,7 @@ export default function Protuct() {
                 key={index}
                 className="flex-1 overflow-hidden rounded-[20px] cursor-pointer transition-transform duration-300 hover:scale-105"
               >
-                <img
+                <Image
                   className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
                   width={200}
                   height={200}

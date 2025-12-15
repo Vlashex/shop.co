@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 export default function ReviewCard({className}: {className?: string}) {
   return (
     <div className={cn(
-      "w-[400px] h-[240px] max-sm:h-[260px] border-gray-300 border-solid border-2 rounded-2xl px-8 py-5",
+      "w-[400px] h-[240px] max-sm:h-[260px] border-gray-300 border-solid border-2 rounded-2xl px-8 py-5 transition-transform duration-300 transform hover:scale-95",
       className
       )}>
       <div className="flex">

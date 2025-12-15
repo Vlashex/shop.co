@@ -14,7 +14,7 @@ export default function ProductCard(
       <Link type="replace" href={`/product?prodId=${id}`}>
         <Card className="w-[295px] h-[405px] p-0 border-0 outline-none shadow-none transition-all duration-300 hover:shadow-lg cursor-pointer group">
           <CardHeader className="w-[295px] h-[295px] overflow-hidden rounded-[20px] relative">
-            <img
+            <Image
               className="w-full h-full rounded-[20px] object-cover transition-transform duration-500 group-hover:scale-110"
               src={images[0] || ''}
               width={400}

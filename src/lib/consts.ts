@@ -1,33 +1,33 @@
 import { ICard } from "./types";
 
 const TSHIRT_IMAGES = [
-    "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab",
-    "https://images.unsplash.com/photo-1523381294911-8d3cead13475",
-    "https://images.unsplash.com/photo-1520975735198-6a1b6d67a3a3"
+    "/products/1.png",
+    "/products/2.png",
+    "/products/3.png"
   ];
   
   const SHORTS_IMAGES = [
-    "https://images.unsplash.com/photo-1591047139829-d91b8f1a9a2c",
-    "https://images.unsplash.com/photo-1562157873-818bc0726f76",
-    "https://images.unsplash.com/photo-1585386959984-a4155223f696"
+    "/products/4.png",
+    "/products/5.png",
+    "/products/6.png"
   ];
   
   const SHIRT_IMAGES = [
-    "https://images.unsplash.com/photo-1520974735198-6a1b6d67a3a3",
-    "https://images.unsplash.com/photo-1584270354949-1e0caa3f5da0",
-    "https://images.unsplash.com/photo-1521572163474-eb2a078a9818"
+    "/products/7.png",
+    "/products/8.png",
+    "/products/9.png"
   ];
   
   const HOODIE_IMAGES = [
-    "https://images.unsplash.com/photo-1541099649105-f69ad21f3246",
-    "https://images.unsplash.com/photo-1585383650028-7e3b9235ca59",
-    "https://images.unsplash.com/photo-1602810318383-e386cc2a3c3f"
+    "/products/10.png",
+    "/products/11.png",
+    "/products/12.png"
   ];
   
   const JEANS_IMAGES = [
-    "https://images.unsplash.com/photo-1542272604-787c3835535d",
-    "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f",
-    "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
+    "/products/13.png",
+    "/products/14.png",
+    "/products/15.png"
   ];
 
 export  const products: ICard[] = [
