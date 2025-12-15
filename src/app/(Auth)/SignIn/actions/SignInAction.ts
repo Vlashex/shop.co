@@ -1,59 +1,24 @@
-"use server"
-import { hashValue } from '@/lib/functions/hashValue';
-import { IAuth, IRegister, IUser } from '@/lib/types';
-import axios from "axios";
+"use server";
 
-// const jwtTokens = async(userId: number) => {
+import { hashValue } from "@/lib/functions/hashValue";
+import { IAuth, IRegister } from "@/lib/types";
+import { signInAction } from "@/app/actions/users";
 
-//     const secretKey = process.env.SECRET_KEY as string
+export const SignInWithEmailAction = async (
+  creds: Omit<IRegister, "name">
+): Promise<IAuth | null> => {
+  try {
+    const payload = {
+      email: creds.email,
+      password: hashValue(creds.password),
+    };
 
-//     const iat = Math.floor(Date.now() / 1000);
-//     const exp = iat + 60* 60 * 24 * 7;
+    console.log(payload, 'payload')
 
-//     return {
-//       user_id: userId,
-//       access_token: await new SignJWT({userId})
-//       .setProtectedHeader({alg: 'HS256', typ: 'JWT'})
-//       .setExpirationTime( exp  )
-//       .setIssuedAt(iat)
-//       .setNotBefore(iat)
-//       .sign(new TextEncoder().encode(secretKey)),
-//       refresh_token: await new SignJWT({userId})
-//       .setProtectedHeader({alg: 'HS256', typ: 'JWT'})
-//       .setExpirationTime( exp*4)
-//       .setIssuedAt(iat)
-//       .setNotBefore(iat)
-//       .sign(new TextEncoder().encode(secretKey)),
-//     }; 
-// };
-
-export const SignInWithEmailAction = async ({email, password: loginPassword}: Omit<IRegister, 'name'>) => {
-
-  const auth:IAuth | null = await axios.post<IAuth>(process.env.BACKEND_HOST+'/users/signin', {
-      email: String(email),
-      password: String(hashValue(loginPassword))
-  })
-  .then((res)=>res.data)
-  .catch((err)=>console.log(err)) || null
-
-<<<<<<< HEAD
-  return auth
-  
-=======
-  if (user == null) return null
-
-  const {password, ...res} = user
-
-  const tokens = await prisma.tokens.create({
-    data: (await jwtTokens(user.id))
-  })
-
-  const { id, user_id, created_at, ...tok } = tokens
-
-  return {
-    user: res,
-    tokens: tok
+    const result = await signInAction(payload);
+    console.log(result, 'result')
+    return result;
+  } catch {
+    return null;
   }
-
->>>>>>> c66cb9db88ae05b44ac963adadfcc16460f44f54
-}
+};

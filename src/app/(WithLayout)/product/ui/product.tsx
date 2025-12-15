@@ -1,63 +1,70 @@
+"use client";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SuggestedProducts from "@/features/SuggestedProducts";
 import Rewiews from "../components/Rewiews";
 import { getProductById } from "@/lib/actions/getProductsById";
 import AddToCart from "../components/AddToCart";
 import Stars from "@/features/Stars";
 import { ICard } from "@/lib/types";
-import { redirect } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default async function Protuct({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  const prodId = Number(searchParams.prodId) || 1;
+export default function Protuct() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const prodId = Number(searchParams.get("prodId")) || 1;
+  const [productData, setProductData] = useState<ICard | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const productData = await getProductById(prodId)
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const data = await getProductById(prodId);
+      if (data === null) {
+        router.push("/shop");
+        return;
+      }
+      setProductData(data);
+      setLoading(false);
+    };
+    fetchProduct();
+  }, [prodId, router]);
 
-    if (productData === null) redirect('/shop')
+  if (loading || !productData) {
+    return (
+      <main className="max-w-[1240px] mx-auto w-11/12 flex flex-col gap-8">
+        <div className="flex items-center justify-center h-96">
+          <div className="text-lg">Loading...</div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="max-w-[1240px] mx-auto w-11/12 flex flex-col gap-8">
       <section className="flex justify-between gap-4 max-lg:flex-col pb-4">
         <div className="flex w-1/2 max-lg:w-full max-lg:flex-col-reverse h-max gap-3">
           <div className="flex flex-[23] flex-col max-lg:flex-row gap-3 justify-between">
-            <div className="flex-1 overflow-y-hidden rounded-[20px]">
-              <Image
-                className="h-full"
-                width={200}
-                height={200}
-                src={process.env.BACKEND_HOST + productData.images[0]}
-                alt=""
-              />
-            </div>
-            <div className="flex-1 overflow-y-hidden rounded-[20px]">
-              <Image
-                className="h-full"
-                width={200}
-                height={200}
-                src={process.env.BACKEND_HOST + productData.images[0]}
-                alt=""
-              />
-            </div>
-            <div className="flex-1 overflow-y-hidden rounded-[20px]">
-              <Image
-                className="h-full"
-                width={200}
-                height={200}
-                src={process.env.BACKEND_HOST + productData.images[0]}
-                alt=""
-              />
-            </div>
+            {[0, 1, 2].map((index) => (
+              <div
+                key={index}
+                className="flex-1 overflow-hidden rounded-[20px] cursor-pointer transition-transform duration-300 hover:scale-105"
+              >
+                <Image
+                  className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
+                  width={200}
+                  height={200}
+                  src={productData.images[0]}
+                  alt=""
+                />
+              </div>
+            ))}
           </div>
-          <div className="lg:h-full lg:flex-[77] max-lg:w-full max-lg:h-full">
-            <Image
-              className="w-full h-auto rounded-[20px]"
+          <div className="lg:h-full lg:flex-[77] rounded-[20px]  max-lg:w-full max-lg:h-full overflow-hidden">
+            <img
+              className="w-full h-auto transition-transform duration-300 hover:scale-105"
               width={1200}
               height={1200}
-              src={process.env.BACKEND_HOST + productData.images[0]}
+              src={productData.images[0]}
               alt=""
             />
           </div>
@@ -77,7 +84,10 @@ export default async function Protuct({
                   </h2>
                   <h3 className="text-[#FF3333] bg-[rgba(255,51,51,.1)] rounded-3xl py-1.5 px-3.5">
                     -
-                    {Math.round(100 - (productData.price / productData.previousPrice) * 100)}
+                    {Math.round(
+                      100 -
+                        (productData.price / productData.previousPrice) * 100
+                    )}
                     %
                   </h3>
                 </>
@@ -90,37 +100,6 @@ export default async function Protuct({
               voluptate dignissimos quod fugit voluptatibus!
             </h4>
           </div>
-
-          {/* <div className="w-full h-[1px] bg-gray-300" />
-
-          <div>
-            <h4 className="text-black text-opacity-60">Select Colors</h4>
-            <div className="flex gap-4 mt-2">
-              <div className="w-[37px] h-[37px] bg-[#4F4631] rounded-full" />
-              <div className="w-[37px] h-[37px] bg-[#314F4A] rounded-full" />
-              <div className="w-[37px] h-[37px] bg-[#31344F] rounded-full" />
-            </div>
-          </div>
-
-          <div className="w-full h-[1px] bg-gray-300" />
-
-          <div className="">
-            <h4 className="text-black text-opacity-60 mb-2">Choose Size</h4>
-            <div className="flex gap-3 max-sm:gap-1 max-sm:overflow-x-auto pb-3">
-              <div className="py-3 px-6 bg-gray-200 w-fit rounded-3xl active:bg-black active:text-white text-nowrap max-sm:px-5">
-                Small
-              </div>
-              <div className="py-3 px-6 bg-gray-200 w-fit rounded-3xl active:bg-black active:text-white text-nowrap max-sm:px-5">
-                Medium
-              </div>
-              <div className="py-3 px-6 bg-gray-200 w-fit rounded-3xl active:bg-black active:text-white text-nowrap max-sm:px-5">
-                Large
-              </div>
-              <div className="py-3 px-6 bg-gray-200 w-fit rounded-3xl active:bg-black active:text-white text-nowrap max-sm:px-5">
-                X-Large
-              </div>
-            </div>
-          </div> */}
 
           <div className="w-full h-[1px] bg-gray-300" />
 

@@ -1,16 +1,8 @@
 "use server"
 
 import { IUser } from "@/lib/types"
-import axios from "axios"
+import { removeAllFromCartByTokenAction } from "@/app/actions/users"
 
 export async function DeleteFromCartAllAction({access_token, prodId}:{access_token:string, prodId: number}):Promise<IUser | null> {
-    return axios.patch(process.env.BACKEND_HOST + '/users/delete-cart-all', {
-        prodId: String(prodId)
-    }, {
-        headers: {
-            Authorization: `${access_token}`
-        }
-    })
-    .then((res) => res.data)
-    .catch((err) => console.log(err)) || null
+    return await removeAllFromCartByTokenAction(access_token, prodId);
 }

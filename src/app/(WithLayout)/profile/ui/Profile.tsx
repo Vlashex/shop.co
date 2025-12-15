@@ -7,8 +7,6 @@ import React, { useLayoutEffect, useState } from 'react'
 import { useCookies } from 'react-cookie'
 import { useSelector } from 'react-redux'
 
-
-
 export default function Profile() {
 
     const [cookies, setCookies] = useCookies(['access_token'])
@@ -16,8 +14,8 @@ export default function Profile() {
 
   return (
     <section className="flex flex-col flex-1 h-[900px] items-center justify-center">
-        <h1 className='text-3xl font-semibold'>{user?.name}</h1>
-        <h1 className='text-3xl font-semibold'>{user?.email}</h1>
+        <h1 className='text-3xl font-semibold mb-4'>{user?.name}</h1>
+        <h1 className='text-3xl font-semibold text-gray-600'>{user?.email}</h1>
     </section>
   )
 }

@@ -38,16 +38,16 @@ export default function Cart() {
 
   return (
     <main className="max-w-[1240px] mx-auto w-11/12 mb-auto">
-      <h1 className="text-[40px] font-semibold">Your cart</h1>
+      <h1 className="text-[40px] font-semibold mb-6">Your cart</h1>
       <div className="grid grid-cols-5 max-md:grid-cols-1 gap-3">
-        <div className="grid col-span-3 justify-items-center justify-stretch grid-cols-1 flex-1 gap-4 border-solid border-[1px] border-gray-300 p-3 rounded-xl">
+        <div className="grid col-span-3 justify-items-center justify-stretch grid-cols-1 flex-1 gap-4 border-solid border-[1px] border-gray-300 p-3 rounded-xl bg-white">
           {cartData
             ? cartData.map((value, index) => (
-                <CartProductCard {...value} key={index} />
+                <CartProductCard {...value} key={value.id} />
               ))
             : null}
         </div>
-        <div className="h-fit flex flex-col gap-6 col-span-2 border-solid border-[1px] border-gray-300 p-3 rounded-xl">
+        <div className="h-fit flex flex-col gap-6 col-span-2 border-solid border-[1px] border-gray-300 p-3 rounded-xl bg-white">
           <h1 className="text-2xl">Order Summary</h1>
           <div className="flex flex-col gap-3">
             <div className="flex justify-between">
@@ -76,8 +76,7 @@ export default function Cart() {
             <div className="flex justify-between">
               <h1 className="font-semibold">Total</h1>
               <h2 className="text-xl font-semibold">
-                $
-                {totalPrice}
+                ${totalPrice}
               </h2>
             </div>
           </div>
@@ -86,11 +85,11 @@ export default function Cart() {
               className="rounded-3xl"
               placeholder="Add promo code"
             />
-            <Button className="text-sm bg-black text-white rounded-3xl">
+            <Button className="text-sm bg-black text-white rounded-3xl transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95">
               Apply
             </Button>
           </form>
-          <Button className="text-sm bg-black text-white rounded-3xl">
+          <Button className="text-sm bg-black text-white rounded-3xl transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95">
             Go to Checkout
           </Button>
         </div>

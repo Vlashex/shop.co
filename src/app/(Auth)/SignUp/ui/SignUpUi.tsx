@@ -11,28 +11,25 @@ import { setCredentials } from "@/lib/store/authSlice";
 import { useRouter } from "next/navigation";
 import { IRegister } from "@/lib/types";
 import { useCookies } from "react-cookie";
-import { createHash } from "crypto";
-import { hashValue } from "@/lib/functions/hashValue";
 
 export default function SignUpUi() {
   const [registerError, setRegisterError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const dispatch = useDispatch();
   const { replace } = useRouter();
-  const [cookies, setCookies] = useCookies(["access_token", "refresh_token"]);
+  const [_, setCookies] = useCookies(["access_token", "refresh_token"]);
 
   const UserSchema = z
     .object({
       email: z.string().email(),
       name: z.string().min(3),
-      password: z
-        .string()
-        .min(6, { message: "Password is too short" })
-        .max(20, { message: "Password is too long" }),
+      password: z.string().min(6).max(20),
       confirmedPassword: z.string(),
     })
     .refine((data) => data.password === data.confirmedPassword, {
       message: "Passwords do not match",
-      path: ["confirmedPassword"], // path of error
+      path: ["confirmedPassword"],
     });
 
   interface SignUp extends IRegister {
@@ -45,69 +42,49 @@ export default function SignUpUi() {
     formState: { errors },
   } = useForm<SignUp>({ resolver: zodResolver(UserSchema) });
 
-  const onSubmit = async(formdData: SignUp) => {
-    const { confirmedPassword, ...cred } = formdData;
-    const credentials:IRegister = {
-      ...cred,
-      password: hashValue(formdData.password),
-    };
+  const onSubmit = async (formData: SignUp) => {
+    setIsLoading(true);
+
+    const { confirmedPassword, ...credentials } = formData;
 
     const { error, data } = await SignUpAction(credentials);
 
-    if (error !== null) {
+    console.log(error, data, 'error, data')
+
+    if (error) {
       setRegisterError(error.message);
+      setIsLoading(false);
       return;
     }
-    if (data !== null) {
+
+    if (data) {
       dispatch(setCredentials(data));
       setCookies("access_token", data.tokens?.access_token);
       setCookies("refresh_token", data.tokens?.refresh_token);
       replace("/");
+      return;
     }
-    if (data === null && error === null) {
-      setRegisterError("Something wrong")
-    }
+
+    setRegisterError("Something wrong");
+    setIsLoading(false);
   };
 
   return (
-    <div className="w-[400px] bg-white flex flex-col gap-8 rounded-xl overflow-hidden justify-center items-center px-8 py-16">
-      <h1 className="text-2xl">Registration</h1>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-5 w-full"
-      >
-        <FormField
-          type="name"
-          name="name"
-          register={register}
-          error={errors.name}
-          placeholder="Enter your name"
-        />
-        <FormField
-          type="email"
-          name="email"
-          register={register}
-          error={errors.email}
-          placeholder="Enter your email"
-        />
-        {registerError != null ? (
-          <label className="-mt-4 text-red-500">{registerError}</label>
-        ) : null}
-        <FormField
-          type="password"
-          name="password"
-          register={register}
-          error={errors.password}
-          placeholder="Enter your password"
-        />
-        <FormField
-          type="password"
-          name="confirmedPassword"
-          register={register}
-          error={errors.confirmedPassword}
-          placeholder="Confirm password"
-        />
-        <Button className="bg-black text-white rounded-sm">SignUp</Button>
+    <div className="w-[400px] bg-white flex flex-col gap-8 rounded-xl overflow-hidden justify-center items-center px-8 py-16 shadow-lg">
+      <h1 className="text-2xl font-semibold">Registration</h1>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 w-full">
+        <FormField type="name" name="name" register={register} error={errors.name} placeholder="Enter your name" />
+        <FormField type="email" name="email" register={register} error={errors.email} placeholder="Enter your email" />
+
+        {registerError && <label className="-mt-4 text-red-500">{registerError}</label>}
+
+        <FormField type="password" name="password" register={register} error={errors.password} placeholder="Enter your password" />
+        <FormField type="password" name="confirmedPassword" register={register} error={errors.confirmedPassword} placeholder="Confirm password" />
+
+        <Button className="bg-black text-white rounded-sm w-full" disabled={isLoading}>
+          {isLoading ? "Signing up..." : "SignUp"}
+        </Button>
       </form>
     </div>
   );
