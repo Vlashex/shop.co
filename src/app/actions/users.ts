@@ -1,72 +1,26 @@
 "use server";
 
-import { revalidatePath } from 'next/cache';
-import {
-  getAllUsers,
-  getUserById,
-  getUserByEmail,
-  createUser,
-  updateUser,
-  deleteUser,
-  addToCart,
-  addManyToCart,
-  removeFromCart,
-  removeAllFromCart,
-  clearCart,
-  getUserPassword,
-  setUserPassword,
-} from '@/lib/mock-db';
-import { IRegister, IUser, IAuth, ITokens } from '@/lib/types';
-import { hashValue } from '@/lib/functions/hashValue';
-import { SignJWT } from 'jose';
-import { getUserIdFromToken } from '@/lib/functions/getUserIdFromToken';
+import { revalidatePath } from "next/cache";
+import { IRegister, IUser, IAuth } from "@/lib/types";
 
-// Генерация простых токенов для mock (в реальном приложении используется JWT)
-async function generateTokens(userId: number) {
-  const secret = new TextEncoder().encode(process.env.SECRET_KEY);
-
-  // access токен — 15 минут
-  const access_token = await new SignJWT({ userId })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("15m")
-    .sign(secret);
-
-  // refresh токен — 7 дней
-  const refresh_token = await new SignJWT({ userId })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("7d")
-    .sign(secret);
-
-  return { access_token, refresh_token };
-}
-
+const BASE_URL = process.env.BACKEND_HOST || "http://localhost:4000/api";
 
 // Регистрация пользователя
 export async function signUpAction(data: IRegister) {
   try {
-    const existingUser = getUserByEmail(data.email);
+    const response = await fetch(`${BASE_URL}/auth/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
 
-    if (existingUser) {
-      return {
-        data: null,
-        error: {
-          statusCode: 409,
-          message: "User with this email already exists",
-        },
-      };
+    const payload = await response.json();
+    if (!response.ok) {
+      return { data: null, error: payload };
     }
 
-    const user = createUser(data, data.password);
-    const tokens = await generateTokens(user.id);
-
     revalidatePath("/");
-
-    return {
-      data: { user, tokens },
-      error: null,
-    };
+    return { data: payload, error: null };
   } catch {
     return {
       data: null,
@@ -80,17 +34,14 @@ export async function signUpAction(data: IRegister) {
 // Вход пользователя
 export async function signInAction(data: Omit<IRegister, "name">): Promise<IAuth | null> {
   try {
-    const user = getUserByEmail(data.email);
-    if (!user) return null;
+    const response = await fetch(`${BASE_URL}/auth/signin`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
 
-    const storedPassword = getUserPassword(user.id);
-    if (!storedPassword || storedPassword !== data.password) {
-      return null;
-    }
-
-    const tokens = await generateTokens(user.id);
-
-    return { user, tokens };
+    if (!response.ok) return null;
+    return response.json();
   } catch (error) {
     console.error("Sign in error:", error);
     return null;
@@ -100,12 +51,16 @@ export async function signInAction(data: Omit<IRegister, "name">): Promise<IAuth
 
 // Получить всех пользователей
 export async function getAllUsersAction(): Promise<IUser[]> {
-  return getAllUsers();
+  const response = await fetch(`${BASE_URL}/users`, { cache: "no-store" });
+  if (!response.ok) return [];
+  return response.json();
 }
 
 // Получить пользователя по ID
 export async function getUserByIdAction(id: number): Promise<IUser | null> {
-  return getUserById(id);
+  const response = await fetch(`${BASE_URL}/users/${id}`, { cache: "no-store" });
+  if (!response.ok) return null;
+  return response.json();
 }
 
 // Обновить пользователя
@@ -113,20 +68,27 @@ export async function updateUserAction(
   id: number,
   data: Partial<Omit<IUser, 'id'>>
 ): Promise<IUser | null> {
-  const updatedUser = updateUser(id, data);
-  if (updatedUser) {
-    revalidatePath('/profile');
-  }
+  const response = await fetch(`${BASE_URL}/users/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) return null;
+  const updatedUser = await response.json();
+  revalidatePath("/profile");
   return updatedUser;
 }
 
 // Удалить пользователя
 export async function deleteUserAction(id: number): Promise<boolean> {
-  const deleted = deleteUser(id);
-  if (deleted) {
-    revalidatePath('/');
-  }
-  return deleted;
+  const response = await fetch(`${BASE_URL}/users/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) return false;
+  revalidatePath("/");
+  return true;
 }
 
 // Добавить товар в корзину (по userId)
@@ -134,11 +96,16 @@ export async function addToCartAction(
   userId: number,
   productId: number
 ): Promise<IUser | null> {
-  const updatedUser = addToCart(userId, productId);
-  if (updatedUser) {
-    revalidatePath('/cart');
-    revalidatePath('/');
-  }
+  const response = await fetch(`${BASE_URL}/cart/items`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ productId }),
+  });
+
+  if (!response.ok) return null;
+  const updatedUser = await response.json();
+  revalidatePath("/cart");
+  revalidatePath("/");
   return updatedUser;
 }
 
@@ -147,11 +114,20 @@ export async function addToCartByTokenAction(
   accessToken: string,
   productId: number
 ): Promise<IUser | null> {
-  const userId = await getUserIdFromToken(accessToken);
-  if (!userId) {
-    return null;
-  }
-  return addToCartAction(userId, productId);
+  const response = await fetch(`${BASE_URL}/cart/items`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: accessToken,
+    },
+    body: JSON.stringify({ productId }),
+  });
+
+  if (!response.ok) return null;
+  const updatedUser = await response.json();
+  revalidatePath("/cart");
+  revalidatePath("/");
+  return updatedUser;
 }
 
 // Добавить несколько товаров в корзину
@@ -159,11 +135,16 @@ export async function addManyToCartAction(
   userId: number,
   productIds: number[]
 ): Promise<IUser | null> {
-  const updatedUser = addManyToCart(userId, productIds);
-  if (updatedUser) {
-    revalidatePath('/cart');
-    revalidatePath('/');
-  }
+  const response = await fetch(`${BASE_URL}/cart/items/bulk`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ productIds }),
+  });
+
+  if (!response.ok) return null;
+  const updatedUser = await response.json();
+  revalidatePath("/cart");
+  revalidatePath("/");
   return updatedUser;
 }
 
@@ -172,11 +153,20 @@ export async function addManyToCartByTokenAction(
   accessToken: string,
   productIds: number[]
 ): Promise<IUser | null> {
-  const userId = await getUserIdFromToken(accessToken);
-  if (!userId) {
-    return null;
-  }
-  return addManyToCartAction(userId, productIds);
+  const response = await fetch(`${BASE_URL}/cart/items/bulk`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: accessToken,
+    },
+    body: JSON.stringify({ productIds }),
+  });
+
+  if (!response.ok) return null;
+  const updatedUser = await response.json();
+  revalidatePath("/cart");
+  revalidatePath("/");
+  return updatedUser;
 }
 
 // Удалить товар из корзины
@@ -184,10 +174,13 @@ export async function removeFromCartAction(
   userId: number,
   productId: number
 ): Promise<IUser | null> {
-  const updatedUser = removeFromCart(userId, productId);
-  if (updatedUser) {
-    revalidatePath('/cart');
-  }
+  const response = await fetch(`${BASE_URL}/cart/items/${productId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) return null;
+  const updatedUser = await response.json();
+  revalidatePath("/cart");
   return updatedUser;
 }
 
@@ -196,11 +189,15 @@ export async function removeFromCartByTokenAction(
   accessToken: string,
   productId: number
 ): Promise<IUser | null> {
-  const userId = await getUserIdFromToken(accessToken);
-  if (!userId) {
-    return null;
-  }
-  return removeFromCartAction(userId, productId);
+  const response = await fetch(`${BASE_URL}/cart/items/${productId}`, {
+    method: "DELETE",
+    headers: { Authorization: accessToken },
+  });
+
+  if (!response.ok) return null;
+  const updatedUser = await response.json();
+  revalidatePath("/cart");
+  return updatedUser;
 }
 
 // Удалить все экземпляры товара из корзины
@@ -208,11 +205,7 @@ export async function removeAllFromCartAction(
   userId: number,
   productId: number
 ): Promise<IUser | null> {
-  const updatedUser = removeAllFromCart(userId, productId);
-  if (updatedUser) {
-    revalidatePath('/cart');
-  }
-  return updatedUser;
+  return removeFromCartAction(userId, productId);
 }
 
 // Удалить все экземпляры товара из корзины (по access_token)
@@ -220,28 +213,31 @@ export async function removeAllFromCartByTokenAction(
   accessToken: string,
   productId: number
 ): Promise<IUser | null> {
-  const userId = await getUserIdFromToken(accessToken);
-  if (!userId) {
-    return null;
-  }
-  return removeAllFromCartAction(userId, productId);
+  return removeFromCartByTokenAction(accessToken, productId);
 }
 
 // Очистить корзину
 export async function clearCartAction(userId: number): Promise<IUser | null> {
-  const updatedUser = clearCart(userId);
-  if (updatedUser) {
-    revalidatePath('/cart');
-  }
+  const response = await fetch(`${BASE_URL}/cart`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) return null;
+  const updatedUser = await response.json();
+  revalidatePath("/cart");
   return updatedUser;
 }
 
 // Очистить корзину (по access_token)
 export async function clearCartByTokenAction(accessToken: string): Promise<IUser | null> {
-  const userId = await getUserIdFromToken(accessToken);
-  if (!userId) {
-    return null;
-  }
-  return clearCartAction(userId);
+  const response = await fetch(`${BASE_URL}/cart`, {
+    method: "DELETE",
+    headers: { Authorization: accessToken },
+  });
+
+  if (!response.ok) return null;
+  const updatedUser = await response.json();
+  revalidatePath("/cart");
+  return updatedUser;
 }
 

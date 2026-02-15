@@ -1,30 +1,42 @@
 "use server";
 
-import { revalidatePath } from 'next/cache';
-import {
-  getAllProducts,
-  getProductById,
-  getProductsByIds,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  seedMockData,
-} from '@/lib/mock-db';
-import { ICard, INewCard } from '@/lib/types';
+import { revalidatePath } from "next/cache";
+import { ICard, INewCard } from "@/lib/types";
+
+const BASE_URL = process.env.BACKEND_HOST || "http://localhost:4000/api";
 
 
 // Создать mock данные
 export async function seedMockDataAction() {
-  return seedMockData(); 
+  const response = await fetch(`${BASE_URL}/products/seed`, {
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return response.json();
 }
 // Получить товары с пагинацией
 export async function getProductsAction(start: number, limit: number) {
-  return getAllProducts(start, limit);
+  const response = await fetch(
+    `${BASE_URL}/products?start=${start}&limit=${limit}`,
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) return [];
+  return response.json();
 }
 
 // Получить товар по ID
 export async function getProductByIdAction(id: number): Promise<ICard | null> {
-  return getProductById(id);
+  const response = await fetch(`${BASE_URL}/products/${id}`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) return null;
+  return response.json();
 }
 
 // Получить товары по массиву ID
@@ -32,7 +44,14 @@ export async function getProductsByIdAction(
   productsId: number[]
 ): Promise<ICard[] | null> {
   if (productsId.length === 0) return null;
-  return getProductsByIds(productsId);
+  const response = await fetch(`${BASE_URL}/products/bulk`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ids: productsId }),
+  });
+
+  if (!response.ok) return null;
+  return response.json();
 }
 
 // Создать товар
@@ -40,7 +59,14 @@ export async function createProductAction(
   data: INewCard
 ): Promise<ICard | null> {
   try {
-    const product = createProduct(data);
+    const response = await fetch(`${BASE_URL}/products`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) return null;
+    const product = await response.json();
     revalidatePath('/shop');
     revalidatePath('/admin');
     return product;
@@ -55,22 +81,31 @@ export async function updateProductAction(
   id: number,
   data: Partial<INewCard>
 ): Promise<ICard | null> {
-  const updatedProduct = updateProduct(id, data);
-  if (updatedProduct) {
-    revalidatePath('/shop');
-    revalidatePath(`/product/${id}`);
-    revalidatePath('/admin');
-  }
+  const response = await fetch(`${BASE_URL}/products/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) return null;
+  const updatedProduct = await response.json();
+
+  revalidatePath("/shop");
+  revalidatePath(`/product/${id}`);
+  revalidatePath("/admin");
   return updatedProduct;
 }
 
 // Удалить товар
 export async function deleteProductAction(id: number): Promise<boolean> {
-  const deleted = deleteProduct(id);
-  if (deleted) {
-    revalidatePath('/shop');
-    revalidatePath('/admin');
-  }
-  return deleted;
+  const response = await fetch(`${BASE_URL}/products/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) return false;
+
+  revalidatePath("/shop");
+  revalidatePath("/admin");
+  return true;
 }
 
