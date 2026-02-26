@@ -3,10 +3,10 @@
 import { ICard } from "../types"
 import { getProductByIdAction, getProductsByIdAction } from "@/app/actions/products"
 
-export async function getProductById(prodId: number) {
+export async function getProductById(prodId: string) {
     return await getProductByIdAction(prodId);
 }
 
-export async function getProductsById(productsId: number[]): Promise<ICard[] | null> {
+export async function getProductsById(productsId: string[]): Promise<ICard[] | null> {
     return await getProductsByIdAction(productsId);
 }

@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux'
 import { setUser } from '@/lib/store/authSlice'
 import { AddManyToCartAction } from '../../cart/actions/addManyToCart'
 
-export default function AddToCart({prodId}: {prodId: number}) {
+export default function AddToCart({prodId}: {prodId: string}) {
 
     const [cookies] = useCookies(['access_token'])
     const [counter, setCounter] = useState<number>(1)

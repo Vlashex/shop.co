@@ -12,11 +12,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 export default function Protuct() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const prodId = Number(searchParams.get("prodId")) || 1;
+  const prodId = searchParams.get("prodId") || "";
   const [productData, setProductData] = useState<ICard | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!prodId) {
+      router.push("/shop");
+      return;
+    }
+
     const fetchProduct = async () => {
       const data = await getProductById(prodId);
       if (data === null) {

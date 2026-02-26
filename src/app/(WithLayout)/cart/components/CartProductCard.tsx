@@ -14,7 +14,7 @@ import { DeleteFromCartAllAction } from "../actions/deleteFromCartAll";
 
 export default function CartProductCard(
   {id, title, images, price, previousPrice, rate}:
-  {id:number ,title:string, images:string[], price:number, previousPrice:number, rate:number }
+  {id:string ,title:string, images:string[], price:number, previousPrice:number, rate:number }
 ) {
 
   const user = useSelector(selectUser)

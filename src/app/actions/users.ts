@@ -5,7 +5,6 @@ import { IRegister, IUser, IAuth } from "@/lib/types";
 
 const BASE_URL = process.env.BACKEND_HOST || "http://localhost:4000/api";
 
-// Регистрация пользователя
 export async function signUpAction(data: IRegister) {
   try {
     const response = await fetch(`${BASE_URL}/auth/signup`, {
@@ -29,9 +28,6 @@ export async function signUpAction(data: IRegister) {
   }
 }
 
-
-
-// Вход пользователя
 export async function signInAction(data: Omit<IRegister, "name">): Promise<IAuth | null> {
   try {
     const response = await fetch(`${BASE_URL}/auth/signin`, {
@@ -48,25 +44,21 @@ export async function signInAction(data: Omit<IRegister, "name">): Promise<IAuth
   }
 }
 
-
-// Получить всех пользователей
 export async function getAllUsersAction(): Promise<IUser[]> {
   const response = await fetch(`${BASE_URL}/users`, { cache: "no-store" });
   if (!response.ok) return [];
   return response.json();
 }
 
-// Получить пользователя по ID
-export async function getUserByIdAction(id: number): Promise<IUser | null> {
+export async function getUserByIdAction(id: string): Promise<IUser | null> {
   const response = await fetch(`${BASE_URL}/users/${id}`, { cache: "no-store" });
   if (!response.ok) return null;
   return response.json();
 }
 
-// Обновить пользователя
 export async function updateUserAction(
-  id: number,
-  data: Partial<Omit<IUser, 'id'>>
+  id: string,
+  data: Partial<Omit<IUser, "id">>
 ): Promise<IUser | null> {
   const response = await fetch(`${BASE_URL}/users/${id}`, {
     method: "PUT",
@@ -80,8 +72,7 @@ export async function updateUserAction(
   return updatedUser;
 }
 
-// Удалить пользователя
-export async function deleteUserAction(id: number): Promise<boolean> {
+export async function deleteUserAction(id: string): Promise<boolean> {
   const response = await fetch(`${BASE_URL}/users/${id}`, {
     method: "DELETE",
   });
@@ -91,10 +82,9 @@ export async function deleteUserAction(id: number): Promise<boolean> {
   return true;
 }
 
-// Добавить товар в корзину (по userId)
 export async function addToCartAction(
-  userId: number,
-  productId: number
+  _userId: string,
+  productId: string
 ): Promise<IUser | null> {
   const response = await fetch(`${BASE_URL}/cart/items`, {
     method: "POST",
@@ -109,10 +99,9 @@ export async function addToCartAction(
   return updatedUser;
 }
 
-// Добавить товар в корзину (по access_token)
 export async function addToCartByTokenAction(
   accessToken: string,
-  productId: number
+  productId: string
 ): Promise<IUser | null> {
   const response = await fetch(`${BASE_URL}/cart/items`, {
     method: "POST",
@@ -130,10 +119,9 @@ export async function addToCartByTokenAction(
   return updatedUser;
 }
 
-// Добавить несколько товаров в корзину
 export async function addManyToCartAction(
-  userId: number,
-  productIds: number[]
+  _userId: string,
+  productIds: string[]
 ): Promise<IUser | null> {
   const response = await fetch(`${BASE_URL}/cart/items/bulk`, {
     method: "POST",
@@ -148,10 +136,9 @@ export async function addManyToCartAction(
   return updatedUser;
 }
 
-// Добавить несколько товаров в корзину (по access_token)
 export async function addManyToCartByTokenAction(
   accessToken: string,
-  productIds: number[]
+  productIds: string[]
 ): Promise<IUser | null> {
   const response = await fetch(`${BASE_URL}/cart/items/bulk`, {
     method: "POST",
@@ -169,10 +156,9 @@ export async function addManyToCartByTokenAction(
   return updatedUser;
 }
 
-// Удалить товар из корзины
 export async function removeFromCartAction(
-  userId: number,
-  productId: number
+  _userId: string,
+  productId: string
 ): Promise<IUser | null> {
   const response = await fetch(`${BASE_URL}/cart/items/${productId}`, {
     method: "DELETE",
@@ -184,10 +170,9 @@ export async function removeFromCartAction(
   return updatedUser;
 }
 
-// Удалить товар из корзины (по access_token)
 export async function removeFromCartByTokenAction(
   accessToken: string,
-  productId: number
+  productId: string
 ): Promise<IUser | null> {
   const response = await fetch(`${BASE_URL}/cart/items/${productId}`, {
     method: "DELETE",
@@ -200,24 +185,21 @@ export async function removeFromCartByTokenAction(
   return updatedUser;
 }
 
-// Удалить все экземпляры товара из корзины
 export async function removeAllFromCartAction(
-  userId: number,
-  productId: number
+  userId: string,
+  productId: string
 ): Promise<IUser | null> {
   return removeFromCartAction(userId, productId);
 }
 
-// Удалить все экземпляры товара из корзины (по access_token)
 export async function removeAllFromCartByTokenAction(
   accessToken: string,
-  productId: number
+  productId: string
 ): Promise<IUser | null> {
   return removeFromCartByTokenAction(accessToken, productId);
 }
 
-// Очистить корзину
-export async function clearCartAction(userId: number): Promise<IUser | null> {
+export async function clearCartAction(_userId: string): Promise<IUser | null> {
   const response = await fetch(`${BASE_URL}/cart`, {
     method: "DELETE",
   });
@@ -228,7 +210,6 @@ export async function clearCartAction(userId: number): Promise<IUser | null> {
   return updatedUser;
 }
 
-// Очистить корзину (по access_token)
 export async function clearCartByTokenAction(accessToken: string): Promise<IUser | null> {
   const response = await fetch(`${BASE_URL}/cart`, {
     method: "DELETE",
@@ -240,4 +221,3 @@ export async function clearCartByTokenAction(accessToken: string): Promise<IUser
   revalidatePath("/cart");
   return updatedUser;
 }
-

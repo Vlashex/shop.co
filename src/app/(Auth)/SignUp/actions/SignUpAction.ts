@@ -1,6 +1,5 @@
 "use server";
 
-import { hashValue } from "@/lib/functions/hashValue";
 import { IAuth, IRegister } from "@/lib/types";
 import { signUpAction } from "@/app/actions/users";
 
@@ -18,7 +17,7 @@ export const SignUpAction = async (payload: IRegister): Promise<Response> => {
   try {
     const credentials: IRegister = {
       ...payload,
-      password: hashValue(payload.password),
+      password: payload.password,
     };
 
     const result = await signUpAction(credentials);

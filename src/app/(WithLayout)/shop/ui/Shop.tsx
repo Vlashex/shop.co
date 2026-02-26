@@ -13,10 +13,8 @@ export default function Shop() {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      console.log(page, 'page')
       setLoading(true);
       const data = await getProductsAction(0 + 10*((page || 1)-1), 20) || [];
-      console.log(data, 'data')
       setProductData(data);
       setLoading(false);
     };

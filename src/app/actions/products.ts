@@ -30,7 +30,7 @@ export async function getProductsAction(start: number, limit: number) {
 }
 
 // Получить товар по ID
-export async function getProductByIdAction(id: number): Promise<ICard | null> {
+export async function getProductByIdAction(id: string): Promise<ICard | null> {
   const response = await fetch(`${BASE_URL}/products/${id}`, {
     cache: "no-store",
   });
@@ -41,7 +41,7 @@ export async function getProductByIdAction(id: number): Promise<ICard | null> {
 
 // Получить товары по массиву ID
 export async function getProductsByIdAction(
-  productsId: number[]
+  productsId: string[]
 ): Promise<ICard[] | null> {
   if (productsId.length === 0) return null;
   const response = await fetch(`${BASE_URL}/products/bulk`, {
@@ -78,7 +78,7 @@ export async function createProductAction(
 
 // Обновить товар
 export async function updateProductAction(
-  id: number,
+  id: string,
   data: Partial<INewCard>
 ): Promise<ICard | null> {
   const response = await fetch(`${BASE_URL}/products/${id}`, {
@@ -97,7 +97,7 @@ export async function updateProductAction(
 }
 
 // Удалить товар
-export async function deleteProductAction(id: number): Promise<boolean> {
+export async function deleteProductAction(id: string): Promise<boolean> {
   const response = await fetch(`${BASE_URL}/products/${id}`, {
     method: "DELETE",
   });

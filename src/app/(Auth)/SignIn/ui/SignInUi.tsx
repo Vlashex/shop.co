@@ -40,6 +40,8 @@ export default function SignInUi() {
 
     const auth = await SignInWithEmailAction(formData);
 
+    console.log(auth)
+
     if (!auth || !auth.tokens) {
       setUserExist(true);
       setIsLoading(false);
