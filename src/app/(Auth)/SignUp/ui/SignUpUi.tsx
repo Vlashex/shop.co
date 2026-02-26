@@ -18,7 +18,7 @@ export default function SignUpUi() {
 
   const dispatch = useDispatch();
   const { replace } = useRouter();
-  const [_, setCookies] = useCookies(["access_token", "refresh_token"]);
+  const [_, setCookies] = useCookies(["access_token"]);
 
   const UserSchema = z
     .object({
@@ -60,7 +60,6 @@ export default function SignUpUi() {
     if (data) {
       dispatch(setCredentials(data));
       setCookies("access_token", data.tokens?.access_token);
-      setCookies("refresh_token", data.tokens?.refresh_token);
       replace("/");
       return;
     }

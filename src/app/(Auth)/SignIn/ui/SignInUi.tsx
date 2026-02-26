@@ -20,7 +20,7 @@ export default function SignInUi() {
 
   const dispatch = useDispatch();
   const router = useRouter();
-  const [_, setCookies] = useCookies(["access_token", "refresh_token"]);
+  const [_, setCookies] = useCookies(["access_token"]);
 
   const UserSchema = z.object({
     email: z.string().email(),
@@ -50,8 +50,6 @@ export default function SignInUi() {
 
     dispatch(setCredentials(auth));
     setCookies("access_token", auth.tokens.access_token);
-    setCookies("refresh_token", auth.tokens.refresh_token);
-
     router.push("/");
   };
 

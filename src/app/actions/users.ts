@@ -1,9 +1,96 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { IRegister, IUser, IAuth } from "@/lib/types";
 
 const BASE_URL = process.env.BACKEND_HOST || "http://localhost:4000/api";
+const ACCESS_COOKIE_NAME = "access_token";
+const REFRESH_COOKIE_NAME = "refresh_token";
+
+function toAuthorizationHeader(token: string): string {
+  if (!token) return "";
+  return token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+}
+
+function setAccessCookie(accessToken: string) {
+  cookies().set(ACCESS_COOKIE_NAME, accessToken, {
+    path: "/",
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
+}
+
+function setRefreshCookie(refreshToken: string) {
+  cookies().set(REFRESH_COOKIE_NAME, refreshToken, {
+    path: "/",
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
+  });
+}
+
+function clearAuthCookies() {
+  const store = cookies();
+  store.delete(ACCESS_COOKIE_NAME);
+  store.delete(REFRESH_COOKIE_NAME);
+}
+
+async function refreshAccessToken(): Promise<string | null> {
+  const refreshToken = cookies().get(REFRESH_COOKIE_NAME)?.value;
+  if (!refreshToken) return null;
+
+  const response = await fetch(`${BASE_URL}/auth/refresh`, {
+    method: "POST",
+    cache: "no-store",
+    headers: {
+      Cookie: `${REFRESH_COOKIE_NAME}=${encodeURIComponent(refreshToken)}`,
+    },
+  });
+
+  if (!response.ok) {
+    clearAuthCookies();
+    return null;
+  }
+
+  const payload = (await response.json()) as {
+    access_token?: string;
+    refresh_token?: string;
+  };
+
+  if (!payload.access_token) {
+    clearAuthCookies();
+    return null;
+  }
+
+  setAccessCookie(payload.access_token);
+  if (payload.refresh_token) {
+    setRefreshCookie(payload.refresh_token);
+  }
+
+  return payload.access_token;
+}
+
+async function withAutoRefresh(
+  accessToken: string,
+  request: (token: string) => Promise<Response>
+): Promise<Response> {
+  const fallbackToken = cookies().get(ACCESS_COOKIE_NAME)?.value || "";
+  const initialToken = accessToken || fallbackToken;
+
+  let response = await request(initialToken);
+  if (response.status !== 401) {
+    return response;
+  }
+
+  const nextAccessToken = await refreshAccessToken();
+  if (!nextAccessToken) {
+    return response;
+  }
+
+  response = await request(nextAccessToken);
+  return response;
+}
 
 export async function signUpAction(data: IRegister) {
   try {
@@ -16,6 +103,13 @@ export async function signUpAction(data: IRegister) {
     const payload = await response.json();
     if (!response.ok) {
       return { data: null, error: payload };
+    }
+
+    if (payload?.tokens?.access_token) {
+      setAccessCookie(payload.tokens.access_token);
+    }
+    if (payload?.tokens?.refresh_token) {
+      setRefreshCookie(payload.tokens.refresh_token);
     }
 
     revalidatePath("/");
@@ -37,7 +131,16 @@ export async function signInAction(data: Omit<IRegister, "name">): Promise<IAuth
     });
 
     if (!response.ok) return null;
-    return response.json();
+    const payload = (await response.json()) as IAuth;
+
+    if (payload?.tokens?.access_token) {
+      setAccessCookie(payload.tokens.access_token);
+    }
+    if (payload?.tokens?.refresh_token) {
+      setRefreshCookie(payload.tokens.refresh_token);
+    }
+
+    return payload;
   } catch (error) {
     console.error("Sign in error:", error);
     return null;
@@ -103,14 +206,16 @@ export async function addToCartByTokenAction(
   accessToken: string,
   productId: string
 ): Promise<IUser | null> {
-  const response = await fetch(`${BASE_URL}/cart/items`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: accessToken,
-    },
-    body: JSON.stringify({ productId }),
-  });
+  const response = await withAutoRefresh(accessToken, (token) =>
+    fetch(`${BASE_URL}/cart/items`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: toAuthorizationHeader(token),
+      },
+      body: JSON.stringify({ productId }),
+    })
+  );
 
   if (!response.ok) return null;
   const updatedUser = await response.json();
@@ -140,14 +245,16 @@ export async function addManyToCartByTokenAction(
   accessToken: string,
   productIds: string[]
 ): Promise<IUser | null> {
-  const response = await fetch(`${BASE_URL}/cart/items/bulk`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: accessToken,
-    },
-    body: JSON.stringify({ productIds }),
-  });
+  const response = await withAutoRefresh(accessToken, (token) =>
+    fetch(`${BASE_URL}/cart/items/bulk`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: toAuthorizationHeader(token),
+      },
+      body: JSON.stringify({ productIds }),
+    })
+  );
 
   if (!response.ok) return null;
   const updatedUser = await response.json();
@@ -174,10 +281,12 @@ export async function removeFromCartByTokenAction(
   accessToken: string,
   productId: string
 ): Promise<IUser | null> {
-  const response = await fetch(`${BASE_URL}/cart/items/${productId}`, {
-    method: "DELETE",
-    headers: { Authorization: accessToken },
-  });
+  const response = await withAutoRefresh(accessToken, (token) =>
+    fetch(`${BASE_URL}/cart/items/${productId}`, {
+      method: "DELETE",
+      headers: { Authorization: toAuthorizationHeader(token) },
+    })
+  );
 
   if (!response.ok) return null;
   const updatedUser = await response.json();
@@ -211,10 +320,12 @@ export async function clearCartAction(_userId: string): Promise<IUser | null> {
 }
 
 export async function clearCartByTokenAction(accessToken: string): Promise<IUser | null> {
-  const response = await fetch(`${BASE_URL}/cart`, {
-    method: "DELETE",
-    headers: { Authorization: accessToken },
-  });
+  const response = await withAutoRefresh(accessToken, (token) =>
+    fetch(`${BASE_URL}/cart`, {
+      method: "DELETE",
+      headers: { Authorization: toAuthorizationHeader(token) },
+    })
+  );
 
   if (!response.ok) return null;
   const updatedUser = await response.json();
